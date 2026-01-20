@@ -92,7 +92,7 @@ def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> 
         trades.append(
             Trade(
                 entity_id=ticker,
-                entry_ts=ts.to_pydatetime(),
+                entry_ts=entry_ts.to_pydatetime(),
                 exit_ts=idx[j].to_pydatetime(),
                 side="LONG",
                 qty=weight,

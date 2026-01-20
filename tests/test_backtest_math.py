@@ -8,7 +8,8 @@ def test_backtest_single_trade_deterministic():
     cfg = BacktestConfig(max_positions=10, holding_days=1, cost_model=CostModel(0.0, 0.0))
     curve, trades = run_event_driven_backtest(sig, cfg)
     assert len(trades) == 1
-    # Entry should occur on next trading day's open (no look-ahead)
-    # We just verify the trade exists and equity curve is monotonic.
-    assert not curve.empty
+    # Entry should occur after the signal date (no look-ahead)
+    signal_date = pd.Timestamp("2024-01-02").date()
+    entry_date = trades[0].entry_ts.date()
+    assert entry_date > signal_date
 

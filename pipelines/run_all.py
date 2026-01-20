@@ -8,6 +8,7 @@ from pipelines.build_features import run as build_features
 from pipelines.train_model import run as train_model
 from pipelines.run_inference import run as run_inference
 from pipelines.run_backtest import run as run_backtest
+from pipelines.run_backtest_walkforward import run_walk_forward
 from pipelines.publish_artifacts import run as publish_artifacts
 
 
@@ -17,7 +18,10 @@ async def run() -> None:
     await build_features()
     await train_model()
     await run_inference()
+    # quick single-pass backtest
     await run_backtest()
+    # more realistic walk-forward run
+    await run_walk_forward()
     await publish_artifacts()
 
 
