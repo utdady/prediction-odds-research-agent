@@ -142,3 +142,11 @@ CREATE TABLE IF NOT EXISTS data_quality_log (
   context JSONB NOT NULL DEFAULT '{}'::jsonb
 );
 
+CREATE TABLE IF NOT EXISTS orchestrator_state (
+  component TEXT PRIMARY KEY,
+  last_run_at TIMESTAMPTZ,
+  is_dirty BOOLEAN DEFAULT false,
+  metadata JSONB DEFAULT '{}'::jsonb
+);
+
+
