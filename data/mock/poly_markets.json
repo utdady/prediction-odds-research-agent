@@ -1,0 +1,19 @@
+[
+  {
+    "market_id": "POLY_AAPL_EVENT_001",
+    "event_id": "EV_AAPL_001",
+    "title": "AAPL: Company event in Q1 (Poly)",
+    "description": "Mock polymarket style market for AAPL",
+    "status": "active",
+    "resolution_ts": "2024-02-15T00:00:00Z"
+  },
+  {
+    "market_id": "POLY_MSFT_EVENT_001",
+    "event_id": "EV_MSFT_001",
+    "title": "MSFT: Company event in Q1 (Poly)",
+    "description": "Mock polymarket style market for MSFT",
+    "status": "active",
+    "resolution_ts": "2024-02-20T00:00:00Z"
+  }
+]
+

@@ -1,0 +1,21 @@
+# Human-in-the-loop mapping (mock)
+# relationship_type: direct|correlated|sector
+- market_id: KALSHI_AAPL_EVENT_001
+  entity_ticker: AAPL
+  relationship_type: direct
+  confidence: 0.95
+  notes: "Mock mapping"
+- market_id: POLY_AAPL_EVENT_001
+  entity_ticker: AAPL
+  relationship_type: direct
+  confidence: 0.95
+  notes: "Mock mapping"
+- market_id: KALSHI_MSFT_EVENT_001
+  entity_ticker: MSFT
+  relationship_type: direct
+  confidence: 0.95
+- market_id: POLY_MSFT_EVENT_001
+  entity_ticker: MSFT
+  relationship_type: direct
+  confidence: 0.95
+

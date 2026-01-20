@@ -1,0 +1,9 @@
+[
+  {"market_id":"POLY_AAPL_EVENT_001","tick_ts":"2024-01-02T00:00:00Z","yes_mid":0.46,"p_norm":0.46,"volume":80},
+  {"market_id":"POLY_AAPL_EVENT_001","tick_ts":"2024-01-03T00:00:00Z","yes_mid":0.49,"p_norm":0.49,"volume":90},
+  {"market_id":"POLY_AAPL_EVENT_001","tick_ts":"2024-01-04T00:00:00Z","yes_mid":0.53,"p_norm":0.53,"volume":110},
+  {"market_id":"POLY_MSFT_EVENT_001","tick_ts":"2024-01-02T00:00:00Z","yes_mid":0.43,"p_norm":0.43,"volume":70},
+  {"market_id":"POLY_MSFT_EVENT_001","tick_ts":"2024-01-03T00:00:00Z","yes_mid":0.42,"p_norm":0.42,"volume":75},
+  {"market_id":"POLY_MSFT_EVENT_001","tick_ts":"2024-01-04T00:00:00Z","yes_mid":0.47,"p_norm":0.47,"volume":100}
+]
+

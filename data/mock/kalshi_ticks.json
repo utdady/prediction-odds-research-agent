@@ -1,0 +1,9 @@
+[
+  {"market_id":"KALSHI_AAPL_EVENT_001","tick_ts":"2024-01-02T00:00:00Z","yes_bid":0.45,"yes_ask":0.49,"yes_mid":0.47,"p_norm":0.47,"volume":100},
+  {"market_id":"KALSHI_AAPL_EVENT_001","tick_ts":"2024-01-03T00:00:00Z","yes_bid":0.46,"yes_ask":0.50,"yes_mid":0.48,"p_norm":0.48,"volume":120},
+  {"market_id":"KALSHI_AAPL_EVENT_001","tick_ts":"2024-01-04T00:00:00Z","yes_bid":0.52,"yes_ask":0.56,"yes_mid":0.54,"p_norm":0.54,"volume":180},
+  {"market_id":"KALSHI_MSFT_EVENT_001","tick_ts":"2024-01-02T00:00:00Z","yes_bid":0.40,"yes_ask":0.44,"yes_mid":0.42,"p_norm":0.42,"volume":90},
+  {"market_id":"KALSHI_MSFT_EVENT_001","tick_ts":"2024-01-03T00:00:00Z","yes_bid":0.39,"yes_ask":0.43,"yes_mid":0.41,"p_norm":0.41,"volume":95},
+  {"market_id":"KALSHI_MSFT_EVENT_001","tick_ts":"2024-01-04T00:00:00Z","yes_bid":0.46,"yes_ask":0.50,"yes_mid":0.48,"p_norm":0.48,"volume":160}
+]
+
