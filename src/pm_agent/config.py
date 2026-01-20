@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     walk_test_days: int = 21
     walk_purge_days: int = 5
 
+    ml_confidence_threshold: float = 0.6
+
 
 settings = Settings()
 

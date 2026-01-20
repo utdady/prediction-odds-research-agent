@@ -8,8 +8,9 @@ from pm_agent.db import get_session
 from pm_agent.logging import configure_logging
 import structlog
 
+from pm_agent.data_quality.validators import validate_probability, validate_tick_ts
 from pm_agent.repo.upserts import upsert_tick
-from pm_agent.sql import fetch_all
+from pm_agent.sql import execute, fetch_all
 
 
 log = structlog.get_logger(__name__)
@@ -33,6 +34,41 @@ async def run() -> None:
             ticks += await poly.fetch_ticks(ids_by_venue["polymarket"])
 
         for t in ticks:
+            ok_p, err_p = validate_probability(t.p_norm)
+            ok_ts, err_ts = validate_tick_ts(t.tick_ts)
+
+            if not ok_p:
+                await execute(
+                    session,
+                    """
+                    INSERT INTO data_quality_log(scope, level, message, context)
+                    VALUES (:scope, :level, :message, :context::jsonb)
+                    """,
+                    {
+                        "scope": "ingest_ticks",
+                        "level": "error",
+                        "message": "probability_range",
+                        "context": json.dumps({"market_id": t.market_id, "venue_id": t.venue_id, "error": err_p}),
+                    },
+                )
+                continue
+
+            if not ok_ts:
+                await execute(
+                    session,
+                    """
+                    INSERT INTO data_quality_log(scope, level, message, context)
+                    VALUES (:scope, :level, :message, :context::jsonb)
+                    """,
+                    {
+                        "scope": "ingest_ticks",
+                        "level": "error",
+                        "message": "timestamp_invalid",
+                        "context": json.dumps({"market_id": t.market_id, "venue_id": t.venue_id, "error": err_ts}),
+                    },
+                )
+                continue
+
             await upsert_tick(session, t)
 
         await session.commit()

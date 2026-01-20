@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 
 import numpy as np
+from datetime import datetime, timedelta, timezone
 import pandas as pd
 
 from pm_agent.db import get_session
@@ -82,47 +83,68 @@ async def run() -> None:
         else:
             df["resolution_ts"] = None
 
+        def get_previous_market_close(snapshot_time: datetime) -> datetime:
+            """Get most recent US market close (16:00 ET ~ 21:00 UTC) before snapshot_time."""
+            snapshot_utc = snapshot_time.astimezone(timezone.utc)
+            close = snapshot_utc.replace(hour=21, minute=0, second=0, microsecond=0)
+            if snapshot_utc < close:
+                close -= timedelta(days=1)
+            while close.weekday() >= 5:  # Saturday=5, Sunday=6
+                close -= timedelta(days=1)
+            return close
+
         out_rows: list[FeatureRow] = []
         for entity_id, g in df.groupby("entity_id"):
             g = g.sort_values("tick_ts")
-            # pivot latest per venue per timestamp
-            # for tiny mock: just use mean p across venues at each tick_ts
-            agg = g.groupby("tick_ts").agg(
-                p_now=("p_norm", "mean"),
-                vol=("volume", "mean"),
-            )
-            agg["delta_p_1h"] = agg["p_now"].diff()
-            agg["delta_p_1d"] = agg["p_now"].diff()
-            agg["rolling_std_p_1d"] = agg["p_now"].rolling(window=3, min_periods=1).std()
-            agg["liquidity_score"] = np.clip((agg["vol"].fillna(0) / (agg["vol"].fillna(0).max() + 1e-9)), 0, 1)
 
-            # disagreement (kalshi - poly) at same ts if both exist
-            piv = g.pivot_table(index="tick_ts", columns="venue_id", values="p_norm", aggfunc="last")
-            agg["venue_disagreement"] = piv.get("kalshi", pd.Series()) - piv.get("polymarket", pd.Series())
-            agg["venue_disagreement"] = agg["venue_disagreement"].fillna(0.0)
+            # choose snapshot grid using unique tick dates for this entity
+            tick_dates = g["tick_ts"].dt.normalize().unique()
 
-            # time to resolution from first mapped market resolution (mock)
-            res_ts = g["resolution_ts"].dropna().iloc[0] if g["resolution_ts"].notna().any() else None
-            if res_ts is not None and pd.notna(res_ts):
-                agg["time_to_resolution_days"] = (res_ts - agg.index) / np.timedelta64(1, "D")
-            else:
-                agg["time_to_resolution_days"] = np.nan
+            for day in tick_dates:
+                # use 06:00 UTC snapshots as “end of day” feature time
+                snapshot_time = (day + pd.Timedelta(hours=6)).to_pydatetime().replace(tzinfo=timezone.utc)
+                cutoff = get_previous_market_close(snapshot_time)
 
-            for ts, r in agg.iterrows():
-                out_rows.append(
-                    FeatureRow(
-                        entity_id=entity_id,
-                        ts=ts.to_pydatetime(),
-                        p_now=None if pd.isna(r["p_now"]) else float(r["p_now"]),
-                        delta_p_1h=None if pd.isna(r["delta_p_1h"]) else float(r["delta_p_1h"]),
-                        delta_p_1d=None if pd.isna(r["delta_p_1d"]) else float(r["delta_p_1d"]),
-                        rolling_std_p_1d=None if pd.isna(r["rolling_std_p_1d"]) else float(r["rolling_std_p_1d"]),
-                        liquidity_score=None if pd.isna(r["liquidity_score"]) else float(r["liquidity_score"]),
-                        venue_disagreement=None if pd.isna(r["venue_disagreement"]) else float(r["venue_disagreement"]),
-                        time_to_resolution_days=None if pd.isna(r["time_to_resolution_days"]) else float(r["time_to_resolution_days"]),
-                        raw={},
-                    )
+                valid = g[g["tick_ts"] <= cutoff]
+                if valid.empty:
+                    continue
+
+                agg = valid.groupby("tick_ts").agg(
+                    p_now=("p_norm", "mean"),
+                    vol=("volume", "mean"),
                 )
+                agg["delta_p_1h"] = agg["p_now"].diff()
+                agg["delta_p_1d"] = agg["p_now"].diff()
+                agg["rolling_std_p_1d"] = agg["p_now"].rolling(window=3, min_periods=1).std()
+                agg["liquidity_score"] = np.clip((agg["vol"].fillna(0) / (agg["vol"].fillna(0).max() + 1e-9)), 0, 1)
+
+                # disagreement (kalshi - poly) at same ts if both exist
+                piv = valid.pivot_table(index="tick_ts", columns="venue_id", values="p_norm", aggfunc="last")
+                agg["venue_disagreement"] = piv.get("kalshi", pd.Series()) - piv.get("polymarket", pd.Series())
+                agg["venue_disagreement"] = agg["venue_disagreement"].fillna(0.0)
+
+                # time to resolution from first mapped market resolution (mock)
+                res_ts = valid["resolution_ts"].dropna().iloc[0] if valid["resolution_ts"].notna().any() else None
+                if res_ts is not None and pd.notna(res_ts):
+                    agg["time_to_resolution_days"] = (res_ts - agg.index) / np.timedelta64(1, "D")
+                else:
+                    agg["time_to_resolution_days"] = np.nan
+
+                for ts, r in agg.iterrows():
+                    out_rows.append(
+                        FeatureRow(
+                            entity_id=entity_id,
+                            ts=ts.to_pydatetime(),
+                            p_now=None if pd.isna(r["p_now"]) else float(r["p_now"]),
+                            delta_p_1h=None if pd.isna(r["delta_p_1h"]) else float(r["delta_p_1h"]),
+                            delta_p_1d=None if pd.isna(r["delta_p_1d"]) else float(r["delta_p_1d"]),
+                            rolling_std_p_1d=None if pd.isna(r["rolling_std_p_1d"]) else float(r["rolling_std_p_1d"]),
+                            liquidity_score=None if pd.isna(r["liquidity_score"]) else float(r["liquidity_score"]),
+                            venue_disagreement=None if pd.isna(r["venue_disagreement"]) else float(r["venue_disagreement"]),
+                            time_to_resolution_days=None if pd.isna(r["time_to_resolution_days"]) else float(r["time_to_resolution_days"]),
+                            raw={},
+                        )
+                    )
 
         await upsert_features(session, out_rows)
         await session.commit()

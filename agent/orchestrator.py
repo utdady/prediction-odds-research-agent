@@ -8,33 +8,66 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from pipelines.run_all import run as run_all
-
-
-STATE_PATH = Path("state.json")
+from pm_agent.db import get_session
+from pm_agent.sql import execute, fetch_all
 
 
 @dataclass
 class State:
     last_run: str | None = None
-    dirty_flags: dict = field(default_factory=lambda: {"markets": True, "ticks": True, "features": True, "model": True, "backtest": True})
+    dirty_flags: dict = field(
+        default_factory=lambda: {
+            "markets": True,
+            "ticks": True,
+            "features": True,
+            "model": True,
+            "backtest": True,
+        }
+    )
 
 
-def load_state() -> State:
-    if not STATE_PATH.exists():
+async def load_state() -> State:
+    async with get_session() as session:
+        rows = await fetch_all(
+            session,
+            "SELECT component, last_run_at, is_dirty FROM orchestrator_state",
+        )
+    if not rows:
         return State()
-    return State(**json.loads(STATE_PATH.read_text(encoding="utf-8")))
+    dirty = {r["component"]: r["is_dirty"] for r in rows}
+    last_run = max((r["last_run_at"] for r in rows if r["last_run_at"]), default=None)
+    return State(last_run=last_run.isoformat() if last_run else None, dirty_flags=dirty)
 
 
-def save_state(state: State) -> None:
-    STATE_PATH.write_text(json.dumps(asdict(state), indent=2), encoding="utf-8")
+async def save_state(state: State) -> None:
+    async with get_session() as session:
+        for component, is_dirty in state.dirty_flags.items():
+            await execute(
+                session,
+                """
+                INSERT INTO orchestrator_state(component, last_run_at, is_dirty)
+                VALUES (:component, :last_run_at, :is_dirty)
+                ON CONFLICT (component) DO UPDATE SET
+                  last_run_at=EXCLUDED.last_run_at,
+                  is_dirty=EXCLUDED.is_dirty
+                """,
+                {
+                    "component": component,
+                    "last_run_at": datetime.now(timezone.utc)
+                    if not is_dirty
+                    else None,
+                    "is_dirty": is_dirty,
+                },
+            )
+        await session.commit()
 
 
 async def run_once() -> None:
-    state = load_state()
+    state = await load_state()
     await run_all()
     state.last_run = datetime.now(timezone.utc).isoformat()
     state.dirty_flags = {k: False for k in state.dirty_flags}
-    save_state(state)
+    await save_state(state)
 
 
 async def run_scheduled(interval_sec: int) -> None:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, date
 
 import numpy as np
 import pandas as pd
@@ -58,15 +58,25 @@ def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> 
     curve = []
     trades: list[Trade] = []
 
+    def _next_trading_day(d: date) -> date:
+        nxt = d + timedelta(days=1)
+        while nxt.weekday() >= 5:  # skip Sat/Sun
+            nxt += timedelta(days=1)
+        return nxt
+
     for _, s in signals.iterrows():
         ticker = s["entity_id"]
         ts = pd.Timestamp(s["ts"], tz="UTC").tz_convert(None).normalize()
+        signal_date = ts.date()
+        entry_date = _next_trading_day(signal_date)
+        entry_ts = pd.Timestamp(entry_date)
         px = price.load_prices(ticker)
 
-        if ts not in px.index:
+        # use next-day open as entry
+        if entry_ts not in px.index:
             continue
         idx = list(px.index)
-        i = idx.index(ts)
+        i = idx.index(entry_ts)
         j = min(i + int(s.get("horizon_days", config.holding_days)), len(idx) - 1)
         entry_px = float(px.iloc[i]["open"])
         exit_px = float(px.iloc[j]["close"])
@@ -95,6 +105,8 @@ def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> 
         )
         curve.append({"date": idx[j], "equity": equity})
 
+    if not curve:
+        return pd.DataFrame(columns=["date", "equity"]), trades
     curve_df = pd.DataFrame(curve).drop_duplicates(subset=["date"]).sort_values("date")
     return curve_df, trades
 
