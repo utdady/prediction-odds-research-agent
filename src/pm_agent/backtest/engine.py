@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, date
 import numpy as np
 import pandas as pd
 
+from pm_agent.backtest.exit_rules import ExitRuleManager, Position
 from pm_agent.prices.provider import LocalCSVPriceProvider
 
 
@@ -23,6 +24,10 @@ class BacktestConfig:
     max_positions: int = 10
     holding_days: int = 5
     cost_model: CostModel = CostModel(5.0, 5.0)
+    use_exit_rules: bool = True
+    stop_loss_pct: float = -0.05
+    take_profit_pct: float = 0.10
+    trailing_stop_pct: float = -0.03
 
 
 @dataclass(frozen=True)
@@ -50,6 +55,15 @@ def _apply_cost(px: float, cost_bps: float, side: str, is_entry: bool) -> float:
 def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> tuple[pd.DataFrame, list[Trade]]:
     price = LocalCSVPriceProvider()
     cost_bps = config.cost_model.total_bps()
+    
+    # Initialize exit rules if enabled
+    exit_rules = None
+    if config.use_exit_rules:
+        exit_rules = ExitRuleManager(
+            stop_loss_pct=config.stop_loss_pct,
+            take_profit_pct=config.take_profit_pct,
+            trailing_stop_pct=config.trailing_stop_pct,
+        )
 
     # signals: columns [entity_id, ts, horizon_days]
     signals = signals.sort_values("ts")
@@ -57,6 +71,7 @@ def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> 
     equity = 1.0
     curve = []
     trades: list[Trade] = []
+    open_positions: dict[str, Position] = {}  # Track open positions for exit rules
 
     def _next_trading_day(d: date) -> date:
         nxt = d + timedelta(days=1)
@@ -77,11 +92,38 @@ def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> 
             continue
         idx = list(px.index)
         i = idx.index(entry_ts)
-        j = min(i + int(s.get("horizon_days", config.holding_days)), len(idx) - 1)
+        max_hold_days = int(s.get("horizon_days", config.holding_days))
+        j_target = min(i + max_hold_days, len(idx) - 1)
+        
         entry_px = float(px.iloc[i]["open"])
-        exit_px = float(px.iloc[j]["close"])
-
         entry_px_eff = _apply_cost(entry_px, cost_bps, "LONG", True)
+        
+        # Check for early exit if exit rules enabled
+        exit_idx = j_target
+        exit_reason = None
+        
+        if exit_rules:
+            position = Position(
+                entity_id=ticker,
+                entry_price=entry_px_eff,
+                entry_ts=entry_ts.to_pydatetime(),
+                side="LONG",
+            )
+            
+            # Check each day for exit
+            for day_idx in range(i + 1, min(i + max_hold_days + 1, len(idx))):
+                current_price = float(px.iloc[day_idx]["close"])
+                exit_reason = exit_rules.check_exit(position, current_price)
+                
+                if exit_reason:
+                    exit_idx = day_idx
+                    break
+            
+            # If no early exit, use target exit
+            if not exit_reason:
+                exit_idx = j_target
+        
+        exit_px = float(px.iloc[exit_idx]["close"])
         exit_px_eff = _apply_cost(exit_px, cost_bps, "LONG", False)
 
         ret = (exit_px_eff / entry_px_eff) - 1.0
@@ -93,7 +135,7 @@ def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> 
             Trade(
                 entity_id=ticker,
                 entry_ts=entry_ts.to_pydatetime(),
-                exit_ts=idx[j].to_pydatetime(),
+                exit_ts=idx[exit_idx].to_pydatetime(),
                 side="LONG",
                 qty=weight,
                 entry_px=entry_px_eff,
@@ -103,7 +145,7 @@ def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> 
                 pnl_pct=pnl_pct,
             )
         )
-        curve.append({"date": idx[j], "equity": equity})
+        curve.append({"date": idx[exit_idx], "equity": equity})
 
     if not curve:
         return pd.DataFrame(columns=["date", "equity"]), trades

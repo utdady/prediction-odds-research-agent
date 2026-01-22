@@ -97,6 +97,13 @@ async def run() -> None:
 
     Path("artifacts").mkdir(exist_ok=True)
     joblib.dump({"model": clf, "calibrator": iso, "features": list(X.columns)}, "artifacts/model_v1.joblib")
+    
+    # Save feature importance
+    feature_importance = pd.DataFrame({
+        'feature': list(X.columns),
+        'importance': clf.coef_[0] if hasattr(clf, 'coef_') else [0.0] * len(X.columns)
+    }).sort_values('importance', key=abs, ascending=False)
+    feature_importance.to_csv("artifacts/feature_importance.csv", index=False)
 
     # MLflow (optional)
     if settings.mlflow_tracking_uri:

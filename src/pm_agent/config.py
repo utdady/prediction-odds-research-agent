@@ -33,6 +33,10 @@ class Settings(BaseSettings):
 
     ml_confidence_threshold: float = 0.6
 
+    # Alert settings
+    alert_email: str | None = None
+    alert_slack_webhook: str | None = None
+
 
 settings = Settings()
 
