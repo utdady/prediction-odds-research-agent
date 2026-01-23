@@ -360,7 +360,7 @@ try:
         except Exception as e:
             st.warning(f"Could not load features: {e}")
         
-        # Calibration Plot (if backtest data exists)
+        # Enhanced Calibration Plot (if backtest data exists)
         st.subheader("Model Calibration")
         try:
             cal_df = pd.read_sql("""
@@ -376,31 +376,66 @@ try:
             """, engine)
             
             if len(cal_df) > 10:
+                # Brier score decomposition
+                from pm_agent.backtest.metrics import brier_score_decomposition
+                import numpy as np
+                
+                y_true = cal_df['actual_outcome'].fillna(0).values
+                y_pred = cal_df['predicted_prob'].fillna(0.5).values
+                
+                brier_decomp = brier_score_decomposition(y_true, y_pred)
+                
+                # Reliability diagram with confidence intervals
                 cal_df['prob_bin'] = pd.cut(cal_df['predicted_prob'], bins=10)
                 calibration = cal_df.groupby('prob_bin').agg({
-                    'predicted_prob': 'mean',
-                    'actual_outcome': 'mean'
+                    'predicted_prob': ['mean', 'count'],
+                    'actual_outcome': ['mean', 'std']
                 }).reset_index()
                 
+                calibration.columns = ['prob_bin', 'pred_mean', 'count', 'obs_mean', 'obs_std']
+                
+                # Calculate confidence intervals (95%)
+                calibration['ci_lower'] = calibration['obs_mean'] - 1.96 * calibration['obs_std'] / np.sqrt(calibration['count'])
+                calibration['ci_upper'] = calibration['obs_mean'] + 1.96 * calibration['obs_std'] / np.sqrt(calibration['count'])
+                calibration = calibration.fillna(0)
+                
+                # Reliability diagram
                 fig = px.scatter(
                     calibration,
-                    x='predicted_prob',
-                    y='actual_outcome',
-                    title="Calibration Plot (Reliability Curve)"
+                    x='pred_mean',
+                    y='obs_mean',
+                    size='count',
+                    error_y=dict(
+                        type='data',
+                        symmetric=False,
+                        array=calibration['ci_upper'] - calibration['obs_mean'],
+                        arrayminus=calibration['obs_mean'] - calibration['ci_lower']
+                    ),
+                    title="Reliability Diagram with Confidence Intervals",
+                    labels={'pred_mean': 'Predicted Probability', 'obs_mean': 'Observed Frequency'}
                 )
                 fig.add_shape(
                     type="line",
                     x0=0, y0=0, x1=1, y1=1,
-                    line=dict(dash="dash", color="gray")
+                    line=dict(dash="dash", color="gray"),
+                    name="Perfect Calibration"
                 )
                 st.plotly_chart(fig, use_container_width=True)
                 
-                brier = ((cal_df['predicted_prob'] - cal_df['actual_outcome']) ** 2).mean()
-                st.metric("Brier Score", f"{brier:.4f}")
+                # Brier score metrics
+                col1, col2, col3, col4 = st.columns(4)
+                col1.metric("Brier Score", f"{brier_decomp['brier']:.4f}")
+                col2.metric("Uncertainty", f"{brier_decomp['uncertainty']:.4f}")
+                col3.metric("Resolution", f"{brier_decomp['resolution']:.4f}")
+                col4.metric("Calibration", f"{brier_decomp['calibration']:.4f}")
+                
+                st.caption("Brier = Uncertainty - Resolution + Calibration")
             else:
                 st.info("Not enough data for calibration plot (need >10 signals with backtest results)")
         except Exception as e:
             st.warning(f"Could not generate calibration plot: {e}")
+            import traceback
+            st.code(traceback.format_exc())
     
     with tab5:
         st.subheader("Advanced Features")

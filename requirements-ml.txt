@@ -1,0 +1,5 @@
+# ML/AI dependencies (optional, large downloads)
+# Uncomment to install advanced ML features
+# transformers==4.46.3
+# torch==2.5.1
+

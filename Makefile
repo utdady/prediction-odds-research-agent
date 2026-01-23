@@ -9,6 +9,9 @@ up:
 down:
 	docker compose down
 
+db_setup:
+	. .venv/Scripts/activate && python setup_db_interactive.py
+
 migrate:
 	. .venv/Scripts/activate && alembic upgrade head
 

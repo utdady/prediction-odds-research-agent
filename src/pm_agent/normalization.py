@@ -15,9 +15,11 @@ def clip_prob(p: float) -> float:
     return min(0.999, max(0.001, p))
 
 
-def normalize_yes_no(yes: float | None, no: float | None) -> NormalizationResult:
+def normalize_yes_no(yes: float | None, no: float | None, market_id: str | None = None, tick_ts: str | None = None) -> NormalizationResult:
     if yes is None and no is None:
-        raise ValueError("missing yes/no")
+        context = f"Market {market_id}" if market_id else "Market"
+        context += f" at {tick_ts}" if tick_ts else ""
+        raise ValueError(f"{context}: missing both yes and no prices. At least one must be provided.")
     illiquid = False
 
     if yes is None and no is not None:
