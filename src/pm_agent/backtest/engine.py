@@ -49,7 +49,7 @@ def _apply_cost(px: float, cost_bps: float, side: str, is_entry: bool) -> float:
     mult = 1.0 + (cost_bps / 1e4)
     if side == "LONG":
         return px * mult if is_entry else px / mult
-    raise ValueError("v1 supports LONG only")
+    raise ValueError(f"Backtest engine v1 only supports LONG positions. Received side='{side}'. SHORT positions not yet implemented.")
 
 
 def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> tuple[pd.DataFrame, list[Trade]]:
