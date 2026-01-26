@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import pandas as pd
 import streamlit as st
 
@@ -15,7 +16,7 @@ db_url = st.sidebar.text_input("DATABASE_URL_SYNC", value="postgresql+psycopg://
 try:
     engine = sqlalchemy.create_engine(db_url)
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Markets", "Signals", "Backtest", "Diagnostics", "Advanced"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Markets", "Signals", "Backtest", "Diagnostics", "Advanced", "Agent"])
 
     with tab1:
         st.subheader("Latest markets")
@@ -480,10 +481,16 @@ try:
                 from pm_agent.arbitrage.detector import ArbitrageDetector
                 
                 markets = pd.read_sql("""
-                    SELECT m.market_id, m.event_id, m.venue_id, m.probability, m.title
+                    SELECT DISTINCT ON (m.market_id)
+                        m.market_id, 
+                        m.event_id, 
+                        m.venue_id, 
+                        t.p_norm as probability, 
+                        m.title
                     FROM markets m
-                    WHERE m.probability IS NOT NULL
-                    ORDER BY m.updated_at DESC
+                    INNER JOIN odds_ticks t ON m.market_id = t.market_id
+                    WHERE t.p_norm IS NOT NULL
+                    ORDER BY m.market_id, t.tick_ts DESC
                 """, engine)
                 
                 if len(markets) > 0:
@@ -554,6 +561,147 @@ try:
             except Exception as e:
                 st.error(f"Sentiment analysis failed: {e}")
                 st.info("Note: For advanced sentiment analysis, install: pip install transformers torch")
+    
+    with tab6:
+        st.subheader("🤖 Search Agent")
+        st.write("Ask me anything about companies, signals, backtests, markets, or features!")
+        
+        # Initialize search agent
+        from pm_agent.agent.search_agent import SearchAgent
+        agent = SearchAgent(engine)
+        
+        # Chat interface
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = []
+        
+        # Display chat history
+        for msg in st.session_state.chat_history:
+            with st.chat_message(msg["role"]):
+                st.write(msg["content"])
+                if "data" in msg and msg["data"] is not None:
+                    if isinstance(msg["data"], pd.DataFrame) and len(msg["data"]) > 0:
+                        st.dataframe(msg["data"], use_container_width=True)
+                    elif isinstance(msg["data"], dict):
+                        # Company detail view
+                        if "company" in msg["data"]:
+                            st.write("**Company Info:**")
+                            st.dataframe(msg["data"]["company"], use_container_width=True)
+                        if "markets" in msg["data"] and len(msg["data"]["markets"]) > 0:
+                            st.write("**Related Markets:**")
+                            st.dataframe(msg["data"]["markets"], use_container_width=True)
+                        if "signals" in msg["data"] and len(msg["data"]["signals"]) > 0:
+                            st.write("**Signals:**")
+                            st.dataframe(msg["data"]["signals"], use_container_width=True)
+                        if "features" in msg["data"] and len(msg["data"]["features"]) > 0:
+                            st.write("**Features:**")
+                            st.dataframe(msg["data"]["features"], use_container_width=True)
+        
+        # User input
+        user_query = st.chat_input("Ask about companies, signals, backtests, markets, or features...")
+        
+        if user_query:
+            # Add user message to history
+            st.session_state.chat_history.append({"role": "user", "content": user_query})
+            
+            # Get agent response
+            with st.chat_message("assistant"):
+                try:
+                    response = agent.search(user_query)
+                    
+                    # Display answer
+                    st.markdown(response["answer"])
+                    
+                    # Display data if available
+                    if response["data"] is not None:
+                        if isinstance(response["data"], pd.DataFrame):
+                            if len(response["data"]) > 0:
+                                st.dataframe(response["data"], use_container_width=True)
+                        elif isinstance(response["data"], dict):
+                            # Company detail view
+                            if "company" in response["data"]:
+                                st.write("**Company Info:**")
+                                st.dataframe(response["data"]["company"], use_container_width=True)
+                            
+                            if "markets" in response["data"] and len(response["data"]["markets"]) > 0:
+                                st.write("**Related Markets:**")
+                                st.dataframe(response["data"]["markets"], use_container_width=True)
+                            
+                            if "signals" in response["data"] and len(response["data"]["signals"]) > 0:
+                                st.write("**Signals:**")
+                                st.dataframe(response["data"]["signals"], use_container_width=True)
+                            
+                            if "features" in response["data"] and len(response["data"]["features"]) > 0:
+                                st.write("**Features:**")
+                                st.dataframe(response["data"]["features"], use_container_width=True)
+                    
+                    # Add assistant response to history
+                    st.session_state.chat_history.append({
+                        "role": "assistant",
+                        "content": response["answer"],
+                        "data": response["data"],
+                    })
+                    
+                except Exception as e:
+                    error_msg = f"Error processing query: {e}"
+                    st.error(error_msg)
+                    st.session_state.chat_history.append({
+                        "role": "assistant",
+                        "content": error_msg,
+                    })
+                    import traceback
+                    st.code(traceback.format_exc())
+            
+            st.rerun()
+        
+        # Quick action buttons
+        st.subheader("Quick Actions")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            if st.button("📊 Show All Companies"):
+                if "chat_history" not in st.session_state:
+                    st.session_state.chat_history = []
+                st.session_state.chat_history.append({"role": "user", "content": "show all companies"})
+                st.rerun()
+        
+        with col2:
+            if st.button("📈 Recent Signals"):
+                if "chat_history" not in st.session_state:
+                    st.session_state.chat_history = []
+                st.session_state.chat_history.append({"role": "user", "content": "show signals"})
+                st.rerun()
+        
+        with col3:
+            if st.button("📉 Backtest Results"):
+                if "chat_history" not in st.session_state:
+                    st.session_state.chat_history = []
+                st.session_state.chat_history.append({"role": "user", "content": "show backtest results"})
+                st.rerun()
+        
+        with col4:
+            if st.button("❓ Help"):
+                if "chat_history" not in st.session_state:
+                    st.session_state.chat_history = []
+                st.session_state.chat_history.append({"role": "user", "content": "help"})
+                st.rerun()
+        
+        # Clear chat button
+        if st.button("🗑️ Clear Chat"):
+            st.session_state.chat_history = []
+            st.rerun()
+        
+        # Example queries
+        with st.expander("💡 Example Queries"):
+            st.write("""
+            - **"show AAPL"** - Get all information about Apple
+            - **"signals for TSLA"** - Get trading signals for Tesla
+            - **"backtest performance"** - See strategy performance
+            - **"markets for MSFT"** - List markets for Microsoft
+            - **"features for AAPL"** - Show feature data for Apple
+            - **"what companies do we have?"** - List all companies
+            - **"help"** - Show help message
+            """)
+
 except Exception as e:
     st.error(f"Error connecting to database: {e}")
 

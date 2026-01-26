@@ -19,14 +19,20 @@ async def run() -> None:
     detector = ArbitrageDetector(min_spread=0.03)
 
     async with get_session() as session:
-        # Fetch markets with probabilities
+        # Fetch markets with probabilities (from latest ticks)
         rows = await fetch_all(
             session,
             """
-            SELECT m.market_id, m.event_id, m.venue_id, m.probability, m.title
+            SELECT DISTINCT ON (m.market_id, m.venue_id)
+                m.market_id, 
+                m.event_id, 
+                m.venue_id, 
+                t.p_norm as probability, 
+                m.title
             FROM markets m
-            WHERE m.probability IS NOT NULL
-            ORDER BY m.updated_at DESC
+            INNER JOIN odds_ticks t ON m.market_id = t.market_id
+            WHERE t.p_norm IS NOT NULL
+            ORDER BY m.market_id, m.venue_id, t.tick_ts DESC
             """,
         )
 
