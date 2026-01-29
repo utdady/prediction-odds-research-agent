@@ -16,18 +16,44 @@ db_url = st.sidebar.text_input("DATABASE_URL_SYNC", value="postgresql+psycopg://
 try:
     engine = sqlalchemy.create_engine(db_url)
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(
-        ["Markets", "Signals", "Backtest", "Diagnostics", "Advanced", "Agent", "Market Intelligence"]
+    # Data freshness indicator
+    try:
+        freshness_df = pd.read_sql("""
+            SELECT 
+                MAX(ts) as last_feature_ts,
+                MAX(tick_ts) as last_tick_ts,
+                MAX(created_at) as last_backtest_ts
+            FROM (
+                SELECT MAX(ts) as ts, NULL::timestamp as tick_ts, NULL::timestamp as created_at FROM features
+                UNION ALL
+                SELECT NULL, MAX(tick_ts), NULL FROM odds_ticks
+                UNION ALL
+                SELECT NULL, NULL, MAX(created_at) FROM backtest_runs
+            ) subq
+        """, engine)
+        
+        if len(freshness_df) > 0 and freshness_df.iloc[0]["last_feature_ts"]:
+            last_update = pd.to_datetime(freshness_df.iloc[0]["last_feature_ts"])
+            hours_ago = (pd.Timestamp.now() - last_update).total_seconds() / 3600
+            if hours_ago > 24:
+                st.warning(f"⚠️ Data may be stale: Last feature update was {hours_ago:.1f} hours ago")
+            elif hours_ago > 6:
+                st.info(f"ℹ️ Last feature update: {hours_ago:.1f} hours ago")
+    except Exception:
+        pass  # Don't fail dashboard if freshness check fails
+
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
+        ["Markets", "Signals", "Backtest", "Diagnostics", "Advanced", "Agent", "Market Intelligence", "Health"]
     )
 
     with tab1:
         st.subheader("Latest markets")
-        df = pd.read_sql("SELECT market_id, venue_id, title, status, updated_at FROM markets ORDER BY updated_at DESC", engine)
+        df = pd.read_sql("SELECT market_id, venue_id, title, status, updated_at FROM markets ORDER BY updated_at DESC LIMIT 1000", engine)
         st.dataframe(df, use_container_width=True)
 
     with tab2:
         st.subheader("Latest signals")
-        df = pd.read_sql("SELECT signal_id, entity_id, ts, strategy, side, strength, horizon_days FROM signals ORDER BY ts DESC", engine)
+        df = pd.read_sql("SELECT signal_id, entity_id, ts, strategy, side, strength, horizon_days FROM signals ORDER BY ts DESC LIMIT 1000", engine)
         st.dataframe(df, use_container_width=True)
         
         # Signal Heatmap
@@ -70,12 +96,12 @@ try:
 
     with tab3:
         st.subheader("Backtest runs")
-        runs = pd.read_sql("SELECT r.run_id, r.created_at, m.sharpe, m.max_drawdown, m.cagr FROM backtest_runs r LEFT JOIN backtest_metrics m ON r.run_id=m.run_id ORDER BY r.created_at DESC", engine)
+        runs = pd.read_sql("SELECT r.run_id, r.created_at, m.sharpe, m.max_drawdown, m.cagr FROM backtest_runs r LEFT JOIN backtest_metrics m ON r.run_id=m.run_id ORDER BY r.created_at DESC LIMIT 100", engine)
         st.dataframe(runs, use_container_width=True)
 
         if len(runs):
             run_id = st.selectbox("Select run", runs["run_id"].tolist())
-            trades = pd.read_sql(f"SELECT * FROM backtest_trades WHERE run_id='{run_id}' ORDER BY entry_ts", engine)
+            trades = pd.read_sql("SELECT * FROM backtest_trades WHERE run_id=%s ORDER BY entry_ts", engine, params=(run_id,))
             st.subheader("Trades")
             st.dataframe(trades, use_container_width=True)
 
@@ -98,13 +124,13 @@ try:
                     from pm_agent.config import settings
                     
                     # Get signals for this run
-                    signals_df = pd.read_sql(f"""
+                    signals_df = pd.read_sql("""
                         SELECT DISTINCT s.entity_id, s.ts, s.horizon_days
                         FROM signals s
                         JOIN backtest_trades bt ON s.entity_id = bt.entity_id
-                        WHERE bt.run_id = '{run_id}'
+                        WHERE bt.run_id = %s
                         ORDER BY s.ts
-                    """, engine)
+                    """, engine, params=(run_id,))
                     
                     if len(signals_df) > 0:
                         config = BacktestConfig(
@@ -901,6 +927,136 @@ try:
                             ],
                             use_container_width=True,
                         )
+    
+    with tab8:
+        st.subheader("🏥 System Health")
+        st.write("Monitor system status, data freshness, and component health")
+        
+        # Health checks
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric("Database", "✅ Connected" if engine else "❌ Disconnected")
+        
+        # Data freshness
+        try:
+            freshness = pd.read_sql("""
+                SELECT 
+                    MAX(ts) as last_feature_ts,
+                    MAX(tick_ts) as last_tick_ts,
+                    COUNT(*) as feature_count
+                FROM (
+                    SELECT MAX(ts) as ts, NULL::timestamp as tick_ts, COUNT(*) as cnt FROM features
+                    UNION ALL
+                    SELECT NULL, MAX(tick_ts), 0 FROM odds_ticks
+                ) subq
+            """, engine)
+            
+            if len(freshness) > 0:
+                last_feature = freshness.iloc[0]["last_feature_ts"]
+                last_tick = freshness.iloc[0]["last_tick_ts"]
+                
+                if last_feature:
+                    hours_ago = (pd.Timestamp.now() - pd.to_datetime(last_feature)).total_seconds() / 3600
+                    with col2:
+                        status = "✅ Fresh" if hours_ago < 6 else "⚠️ Stale" if hours_ago < 24 else "❌ Very Stale"
+                        st.metric("Features", status, f"{hours_ago:.1f} hours ago")
+                
+                if last_tick:
+                    tick_hours_ago = (pd.Timestamp.now() - pd.to_datetime(last_tick)).total_seconds() / 3600
+                    with col3:
+                        tick_status = "✅ Fresh" if tick_hours_ago < 1 else "⚠️ Stale" if tick_hours_ago < 6 else "❌ Very Stale"
+                        st.metric("Ticks", tick_status, f"{tick_hours_ago:.1f} hours ago")
+        except Exception as e:
+            st.error(f"Error checking freshness: {e}")
+        
+        # Orchestrator state
+        st.subheader("📊 Pipeline Status")
+        try:
+            state_df = pd.read_sql("""
+                SELECT 
+                    component,
+                    last_run_at,
+                    last_success_at,
+                    last_failure_at,
+                    run_count,
+                    failure_count,
+                    is_dirty
+                FROM orchestrator_state
+                ORDER BY component
+            """, engine)
+            
+            if len(state_df) > 0:
+                # Format timestamps
+                for col in ["last_run_at", "last_success_at", "last_failure_at"]:
+                    if col in state_df.columns:
+                        state_df[col] = pd.to_datetime(state_df[col]).dt.strftime("%Y-%m-%d %H:%M")
+                
+                # Color code dirty status
+                def format_status(row):
+                    if row.get("is_dirty"):
+                        return "🔴 Dirty"
+                    elif row.get("last_success_at"):
+                        return "✅ Clean"
+                    else:
+                        return "⚪ Never Run"
+                
+                state_df["Status"] = state_df.apply(format_status, axis=1)
+                st.dataframe(state_df, use_container_width=True)
+            else:
+                st.info("No orchestrator state found. Run pipelines to populate.")
+        except Exception as e:
+            st.warning(f"Could not load orchestrator state: {e}")
+        
+        # Data quality logs
+        st.subheader("🔍 Data Quality Issues")
+        try:
+            dq_df = pd.read_sql("""
+                SELECT 
+                    scope,
+                    level,
+                    message,
+                    created_at,
+                    context
+                FROM data_quality_log
+                WHERE created_at >= NOW() - INTERVAL '7 days'
+                ORDER BY created_at DESC
+                LIMIT 50
+            """, engine)
+            
+            if len(dq_df) > 0:
+                st.dataframe(dq_df, use_container_width=True)
+                
+                # Summary
+                error_count = len(dq_df[dq_df["level"] == "error"])
+                warning_count = len(dq_df[dq_df["level"] == "warning"])
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.metric("Errors (7d)", error_count)
+                with col2:
+                    st.metric("Warnings (7d)", warning_count)
+            else:
+                st.success("✅ No data quality issues in the last 7 days")
+        except Exception as e:
+            st.warning(f"Could not load data quality logs: {e}")
+        
+        # Model status
+        st.subheader("🤖 Model Status")
+        from pathlib import Path
+        
+        model_path = Path("artifacts/model_v1.joblib")
+        if model_path.exists():
+            st.success(f"✅ Model available: {model_path}")
+            try:
+                import joblib
+                model_data = joblib.load(model_path)
+                if "features" in model_data:
+                    st.write(f"**Features**: {', '.join(model_data['features'])}")
+            except Exception as e:
+                st.warning(f"Could not load model metadata: {e}")
+        else:
+            st.warning("⚠️ Model not found. Run training pipeline to generate model.")
 
 except Exception as e:
     st.error(f"Error connecting to database: {e}")

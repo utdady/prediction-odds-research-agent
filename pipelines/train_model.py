@@ -74,8 +74,8 @@ async def run() -> None:
     y = make_labels(df, horizon_days=settings.holding_period_days)
     df = df.assign(label=y).dropna()
 
-    if len(df) < 10:
-        log.info("train_model_too_few_rows", n=len(df))
+    if len(df) < 100:
+        log.warning("train_model_too_few_rows", n=len(df), min_required=100)
         return
 
     X = df[["p_now", "delta_p_1h", "delta_p_1d", "rolling_std_p_1d", "liquidity_score", "venue_disagreement", "time_to_resolution_days"]].fillna(0.0)

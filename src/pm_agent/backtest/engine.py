@@ -110,9 +110,9 @@ def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> 
                 side="LONG",
             )
             
-            # Check each day for exit
+            # Check each day for exit (use open price for consistency with entry)
             for day_idx in range(i + 1, min(i + max_hold_days + 1, len(idx))):
-                current_price = float(px.iloc[day_idx]["close"])
+                current_price = float(px.iloc[day_idx]["open"])
                 exit_reason = exit_rules.check_exit(position, current_price)
                 
                 if exit_reason:
@@ -123,7 +123,9 @@ def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> 
             if not exit_reason:
                 exit_idx = j_target
         
-        exit_px = float(px.iloc[exit_idx]["close"])
+        # Use open price for exit to match entry execution (both at market open)
+        # This is more realistic: enter at next-day open, exit at target-day open
+        exit_px = float(px.iloc[exit_idx]["open"])
         exit_px_eff = _apply_cost(exit_px, cost_bps, "LONG", False)
 
         ret = (exit_px_eff / entry_px_eff) - 1.0

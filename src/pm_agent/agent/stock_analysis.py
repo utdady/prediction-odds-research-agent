@@ -53,8 +53,9 @@ class StockAnalysisAgent:
         reference_time = pd.to_datetime(ref_ts).to_pydatetime()
         cutoff = reference_time - timedelta(days=lookback_days)
 
+        # Use parameterized queries to prevent SQL injection
         if ticker:
-            query = f"""
+            query = """
                 SELECT 
                     e.ticker,
                     e.name,
@@ -68,11 +69,12 @@ class StockAnalysisAgent:
                     f.rolling_std_p_1d
                 FROM features f
                 JOIN entities e ON f.entity_id = e.entity_id
-                WHERE e.ticker = '{ticker}' AND f.ts >= '{cutoff.isoformat()}'
+                WHERE e.ticker = %s AND f.ts >= %s
                 ORDER BY f.ts DESC
             """
+            params = (ticker, cutoff.isoformat())
         else:
-            query = f"""
+            query = """
                 SELECT 
                     e.ticker,
                     e.name,
@@ -86,11 +88,12 @@ class StockAnalysisAgent:
                     f.rolling_std_p_1d
                 FROM features f
                 JOIN entities e ON f.entity_id = e.entity_id
-                WHERE f.ts >= '{cutoff.isoformat()}'
+                WHERE f.ts >= %s
                 ORDER BY e.ticker, f.ts DESC
             """
+            params = (cutoff.isoformat(),)
 
-        df = pd.read_sql(query, self.engine)
+        df = pd.read_sql(query, self.engine, params=params)
 
         if len(df) == 0:
             return {
@@ -356,17 +359,17 @@ class StockAnalysisAgent:
 
     def _get_recent_signals(self, ticker: str) -> list[dict[str, Any]]:
         """Get recent trading signals for a ticker."""
-        query = f"""
+        query = """
             SELECT s.ts, s.strategy, s.side, s.strength, s.horizon_days
             FROM signals s
             JOIN entities e ON s.entity_id = e.entity_id
-            WHERE e.ticker = '{ticker}'
+            WHERE e.ticker = %s
             ORDER BY s.ts DESC
             LIMIT 5
         """
 
         try:
-            df = pd.read_sql(query, self.engine)
+            df = pd.read_sql(query, self.engine, params=(ticker,))
             return df.to_dict("records") if len(df) > 0 else []
         except Exception:
             return []
@@ -383,7 +386,7 @@ class StockAnalysisAgent:
         reference_time = pd.to_datetime(ref_ts).to_pydatetime()
         cutoff = reference_time - timedelta(days=7)
 
-        query = f"""
+        query = """
             SELECT 
                 e.sector,
                 e.ticker,
@@ -392,12 +395,12 @@ class StockAnalysisAgent:
                 f.liquidity_score
             FROM features f
             JOIN entities e ON f.entity_id = e.entity_id
-            WHERE f.ts >= '{cutoff.isoformat()}'
+            WHERE f.ts >= %s
                 AND e.sector IS NOT NULL
             ORDER BY e.sector, f.ts DESC
         """
 
-        df = pd.read_sql(query, self.engine)
+        df = pd.read_sql(query, self.engine, params=(cutoff.isoformat(),))
 
         if len(df) == 0:
             return {"sectors": [], "analysis": "No sector data available"}
