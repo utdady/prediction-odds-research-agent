@@ -16,7 +16,9 @@ db_url = st.sidebar.text_input("DATABASE_URL_SYNC", value="postgresql+psycopg://
 try:
     engine = sqlalchemy.create_engine(db_url)
 
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Markets", "Signals", "Backtest", "Diagnostics", "Advanced", "Agent"])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(
+        ["Markets", "Signals", "Backtest", "Diagnostics", "Advanced", "Agent", "Market Intelligence"]
+    )
 
     with tab1:
         st.subheader("Latest markets")
@@ -565,8 +567,8 @@ try:
     with tab6:
         st.subheader("🤖 Search Agent")
         st.write("Ask me anything about companies, signals, backtests, markets, or features!")
-        
-        # Initialize search agent
+
+        # Initialize chat search agent (company/market/backtest queries)
         from pm_agent.agent.search_agent import SearchAgent
         agent = SearchAgent(engine)
         
@@ -659,32 +661,24 @@ try:
         
         with col1:
             if st.button("📊 Show All Companies"):
-                if "chat_history" not in st.session_state:
-                    st.session_state.chat_history = []
                 st.session_state.chat_history.append({"role": "user", "content": "show all companies"})
                 st.rerun()
         
         with col2:
             if st.button("📈 Recent Signals"):
-                if "chat_history" not in st.session_state:
-                    st.session_state.chat_history = []
                 st.session_state.chat_history.append({"role": "user", "content": "show signals"})
                 st.rerun()
         
         with col3:
             if st.button("📉 Backtest Results"):
-                if "chat_history" not in st.session_state:
-                    st.session_state.chat_history = []
                 st.session_state.chat_history.append({"role": "user", "content": "show backtest results"})
                 st.rerun()
         
         with col4:
             if st.button("❓ Help"):
-                if "chat_history" not in st.session_state:
-                    st.session_state.chat_history = []
                 st.session_state.chat_history.append({"role": "user", "content": "help"})
                 st.rerun()
-        
+
         # Clear chat button
         if st.button("🗑️ Clear Chat"):
             st.session_state.chat_history = []
@@ -701,6 +695,212 @@ try:
             - **"what companies do we have?"** - List all companies
             - **"help"** - Show help message
             """)
+
+    # ------------------------------------------------------------------
+    # Market Intelligence tab - uses StockAnalysisAgent
+    # ------------------------------------------------------------------
+    with tab7:
+        st.subheader("📊 Market Intelligence")
+        st.write("AI-powered stock analysis based on prediction market odds")
+
+        from pm_agent.agent.stock_analysis import StockAnalysisAgent
+
+        analyst = StockAnalysisAgent(engine)
+
+        analysis_type = st.selectbox(
+            "Choose Analysis Type",
+            ["Daily Digest", "Stock Performance", "Individual Stock", "Compare Stocks", "Sector Analysis"],
+        )
+
+        if analysis_type == "Daily Digest":
+            st.subheader("📰 Daily Market Digest")
+            if st.button("Generate Today's Digest"):
+                with st.spinner("Analyzing market data..."):
+                    digest = analyst.get_daily_digest()
+                    st.markdown(digest)
+
+        elif analysis_type == "Stock Performance":
+            st.subheader("📈 Stock Performance Analysis")
+            col1, col2 = st.columns(2)
+            with col1:
+                lookback = st.slider("Lookback Period (days)", 1, 30, 7)
+            with col2:
+                threshold = st.slider("Significance Threshold", 0.01, 0.20, 0.08, 0.01)
+
+            if st.button("Analyze All Stocks"):
+                with st.spinner("Analyzing stocks..."):
+                    results = analyst.analyze_stock_performance(
+                        ticker=None,
+                        lookback_days=lookback,
+                        threshold=threshold,
+                    )
+                    st.markdown(results["analysis"])
+
+                    if results["performing_well"]:
+                        st.subheader("🚀 Top Performers")
+                        well_df = pd.DataFrame(results["performing_well"])
+                        st.dataframe(
+                            well_df[
+                                [
+                                    "ticker",
+                                    "name",
+                                    "current_probability",
+                                    "total_change",
+                                    "avg_daily_change",
+                                    "volatility",
+                                    "liquidity_note",
+                                ]
+                            ],
+                            use_container_width=True,
+                        )
+
+                    if results["performing_poorly"]:
+                        st.subheader("📉 Under Pressure")
+                        poor_df = pd.DataFrame(results["performing_poorly"])
+                        st.dataframe(
+                            poor_df[
+                                [
+                                    "ticker",
+                                    "name",
+                                    "current_probability",
+                                    "total_change",
+                                    "avg_daily_change",
+                                    "volatility",
+                                    "liquidity_note",
+                                ]
+                            ],
+                            use_container_width=True,
+                        )
+
+                    if results["neutral"]:
+                        with st.expander(f"⚖️ Neutral Stocks ({len(results['neutral'])})"):
+                            neutral_df = pd.DataFrame(results["neutral"])
+                            st.dataframe(
+                                neutral_df[
+                                    [
+                                        "ticker",
+                                        "name",
+                                        "current_probability",
+                                        "total_change",
+                                        "liquidity_note",
+                                    ]
+                                ],
+                                use_container_width=True,
+                            )
+
+        elif analysis_type == "Individual Stock":
+            st.subheader("🔍 Individual Stock Analysis")
+            tickers_df = pd.read_sql("SELECT DISTINCT ticker FROM entities ORDER BY ticker", engine)
+            available_tickers = tickers_df["ticker"].tolist()
+            ticker = st.selectbox("Select Stock", available_tickers)
+
+            if st.button("Get Stock Outlook"):
+                with st.spinner(f"Analyzing {ticker}..."):
+                    outlook = analyst.get_stock_outlook(ticker)
+                    if outlook["outlook"] != "unknown":
+                        st.markdown(f"# {outlook['ticker']} - {outlook['name']}")
+                        st.markdown(f"**Sector**: {outlook['sector']}")
+                        st.markdown("---")
+
+                        col1, col2, col3, col4 = st.columns(4)
+                        outlook_emoji = {"bullish": "🚀", "bearish": "📉", "neutral": "⚖️"}
+                        with col1:
+                            st.metric("Outlook", outlook["outlook"].title(), help=outlook_emoji.get(outlook["outlook"], ""))
+                        with col2:
+                            st.metric("Confidence", f"{outlook['confidence']:.0%}")
+                        with col3:
+                            st.metric("Risk Level", outlook["risk_level"])
+                        with col4:
+                            st.metric(
+                                "Probability",
+                                f"{outlook['details']['current_probability']:.1%}",
+                                delta=f"{outlook['details']['total_change']:+.1%}",
+                            )
+
+                        st.markdown("---")
+                        rec = outlook["recommendation"]
+                        if "Strong Buy" in rec:
+                            st.success(f"**Recommendation**: {rec}")
+                        elif "Buy" in rec:
+                            st.info(f"**Recommendation**: {rec}")
+                        elif "Sell" in rec:
+                            st.warning(f"**Recommendation**: {rec}")
+                        else:
+                            st.info(f"**Recommendation**: {rec}")
+
+                        st.subheader("📊 Details")
+                        dcol1, dcol2 = st.columns(2)
+                        with dcol1:
+                            st.write(f"**Total Change**: {outlook['details']['total_change']:+.2%}")
+                            st.write(f"**Avg Daily Change**: {outlook['details']['avg_daily_change']:+.2%}")
+                            st.write(f"**Trend**: {outlook['details']['trend_direction'].title()}")
+                        with dcol2:
+                            st.write(f"**Volatility**: {outlook['details']['volatility']:.3f}")
+                            st.write(f"**Liquidity**: {outlook['details']['liquidity_note']}")
+                            st.write(f"**Reason**: {outlook['details']['reason']}")
+
+                        if outlook["recent_signals"]:
+                            st.subheader("📡 Recent Signals")
+                            st.dataframe(pd.DataFrame(outlook["recent_signals"]), use_container_width=True)
+                        else:
+                            st.info("No recent trading signals for this stock")
+                    else:
+                        st.warning(f"No data available for {ticker}")
+
+        elif analysis_type == "Compare Stocks":
+            st.subheader("⚖️ Stock Comparison")
+            tickers_df = pd.read_sql("SELECT DISTINCT ticker FROM entities ORDER BY ticker", engine)
+            available_tickers = tickers_df["ticker"].tolist()
+            selected_tickers = st.multiselect(
+                "Select Stocks to Compare (2-5 stocks)",
+                available_tickers,
+                default=available_tickers[:3] if len(available_tickers) >= 3 else available_tickers,
+            )
+
+            if len(selected_tickers) < 2:
+                st.warning("Please select at least 2 stocks to compare")
+            elif len(selected_tickers) > 5:
+                st.warning("Please select at most 5 stocks to compare")
+            elif st.button("Compare Stocks"):
+                with st.spinner("Comparing stocks..."):
+                    comparison = analyst.compare_stocks(selected_tickers)
+                    if comparison["comparison"]:
+                        st.markdown(comparison["summary"])
+                        st.markdown("---")
+                        comp_data = []
+                        for stock in comparison["comparison"]:
+                            comp_data.append(
+                                {
+                                    "Ticker": stock["ticker"],
+                                    "Name": stock["name"],
+                                    "Outlook": stock["outlook"].title(),
+                                    "Recommendation": stock["recommendation"],
+                                    "Confidence": f"{stock['confidence']:.0%}",
+                                    "Probability": f"{stock['details']['current_probability']:.1%}",
+                                    "Change": f"{stock['details']['total_change']:+.1%}",
+                                    "Risk": stock["risk_level"],
+                                }
+                            )
+                        st.dataframe(pd.DataFrame(comp_data), use_container_width=True)
+
+        elif analysis_type == "Sector Analysis":
+            st.subheader("🏭 Sector Performance Analysis")
+            if st.button("Analyze Sectors"):
+                with st.spinner("Analyzing sectors..."):
+                    sector_results = analyst.get_sector_analysis()
+                    if sector_results["sectors"]:
+                        st.markdown(sector_results["analysis"])
+                        st.markdown("---")
+                        sector_df = pd.DataFrame(sector_results["sectors"])
+                        sector_df["avg_change"] = sector_df["avg_change"].apply(lambda x: f"{x:+.2%}")
+                        sector_df["avg_probability"] = sector_df["avg_probability"].apply(lambda x: f"{x:.1%}")
+                        sector_df["liquidity"] = sector_df["liquidity"].apply(lambda x: f"{x:.0%}")
+                        st.dataframe(
+                            sector_df[
+                                ["emoji", "sector", "sentiment", "avg_change", "avg_probability", "n_stocks", "liquidity"]
+                            ],
+                            use_container_width=True,
+                        )
 
 except Exception as e:
     st.error(f"Error connecting to database: {e}")

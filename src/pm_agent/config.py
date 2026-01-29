@@ -7,11 +7,22 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     app_name: str = "pm-odds-research-agent"
+    debug: bool = False
 
     database_url_async: str = "postgresql+asyncpg://pm:pm@localhost:5432/pm_research"
     database_url_sync: str = "postgresql+psycopg://pm:pm@localhost:5432/pm_research"
 
+    # Database pooling
+    db_pool_size: int = 10
+    db_max_overflow: int = 20
+    db_pool_recycle: int = 3600  # seconds
+
     mock_mode: bool = True
+
+    # API credentials for live prediction markets
+    kalshi_api_key: str | None = None
+    kalshi_api_secret: str | None = None
+    polymarket_api_key: str | None = None
 
     mlflow_tracking_uri: str | None = "http://localhost:5000"
     mlflow_experiment: str = "pm_odds_signals"

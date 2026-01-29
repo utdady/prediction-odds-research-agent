@@ -5,17 +5,88 @@
   relationship_type: direct
   confidence: 0.95
   notes: "Mock mapping"
-- market_id: POLY_AAPL_EVENT_001
+  sector: Technology
+- market_id: POLYMARKET_AAPL_EVENT_001
   entity_ticker: AAPL
   relationship_type: direct
   confidence: 0.95
   notes: "Mock mapping"
+  sector: Technology
 - market_id: KALSHI_MSFT_EVENT_001
   entity_ticker: MSFT
   relationship_type: direct
   confidence: 0.95
-- market_id: POLY_MSFT_EVENT_001
+  sector: Technology
+- market_id: POLYMARKET_MSFT_EVENT_002
   entity_ticker: MSFT
   relationship_type: direct
   confidence: 0.95
+  sector: Technology
+
+# Additional mock tickers mapped to generator markets
+- market_id: KALSHI_GOOGL_EVENT_003
+  entity_ticker: GOOGL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: POLYMARKET_GOOGL_EVENT_003
+  entity_ticker: GOOGL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+
+- market_id: KALSHI_TSLA_EVENT_004
+  entity_ticker: TSLA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: POLYMARKET_TSLA_EVENT_004
+  entity_ticker: TSLA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+
+- market_id: KALSHI_AMZN_EVENT_005
+  entity_ticker: AMZN
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: POLYMARKET_AMZN_EVENT_005
+  entity_ticker: AMZN
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+
+- market_id: KALSHI_NVDA_EVENT_006
+  entity_ticker: NVDA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: POLYMARKET_NVDA_EVENT_006
+  entity_ticker: NVDA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+
+- market_id: KALSHI_META_EVENT_007
+  entity_ticker: META
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: POLYMARKET_META_EVENT_007
+  entity_ticker: META
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+
+- market_id: KALSHI_NFLX_EVENT_008
+  entity_ticker: NFLX
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: POLYMARKET_NFLX_EVENT_008
+  entity_ticker: NFLX
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
 

@@ -25,14 +25,32 @@ async def run() -> None:
         for r in market_rows:
             ids_by_venue.setdefault(r["venue_id"], []).append(r["market_id"])
 
-        kalshi = MockConnector("kalshi", "data/mock/kalshi_markets.json", "data/mock/kalshi_ticks.json")
-        poly = MockConnector("polymarket", "data/mock/poly_markets.json", "data/mock/poly_ticks.json")
+        # Use live connectors if not in mock mode and credentials are provided
+        if settings.mock_mode:
+            kalshi = MockConnector("kalshi", "data/mock/kalshi_markets.json", "data/mock/kalshi_ticks.json")
+            poly = MockConnector("polymarket", "data/mock/polymarket_markets.json", "data/mock/polymarket_ticks.json")
+        else:
+            from pm_agent.connectors.kalshi import KalshiConnector
+            from pm_agent.connectors.polymarket import PolymarketConnector
+            
+            kalshi = KalshiConnector(
+                api_key=settings.kalshi_api_key,
+                api_secret=settings.kalshi_api_secret,
+            )
+            poly = PolymarketConnector(api_key=settings.polymarket_api_key)
 
         ticks = []
-        if "kalshi" in ids_by_venue:
-            ticks += await kalshi.fetch_ticks(ids_by_venue["kalshi"])
-        if "polymarket" in ids_by_venue:
-            ticks += await poly.fetch_ticks(ids_by_venue["polymarket"])
+        try:
+            if "kalshi" in ids_by_venue:
+                ticks += await kalshi.fetch_ticks(ids_by_venue["kalshi"])
+            if "polymarket" in ids_by_venue:
+                ticks += await poly.fetch_ticks(ids_by_venue["polymarket"])
+        finally:
+            # Close live connectors if they have a close method
+            if hasattr(kalshi, "close"):
+                await kalshi.close()
+            if hasattr(poly, "close"):
+                await poly.close()
 
         for t in ticks:
             ok_p, err_p = validate_probability(t.p_norm)

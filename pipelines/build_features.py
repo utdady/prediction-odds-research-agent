@@ -28,14 +28,17 @@ async def ensure_entities_and_maps(session) -> None:
     for m in mapping:
         ticker = m["entity_ticker"]
         entity_id = ticker
+        sector = m.get("sector")
         await execute(
             session,
             """
-            INSERT INTO entities(entity_id, ticker, name)
-            VALUES (:entity_id, :ticker, :name)
-            ON CONFLICT (entity_id) DO UPDATE SET ticker=EXCLUDED.ticker
+            INSERT INTO entities(entity_id, ticker, name, sector)
+            VALUES (:entity_id, :ticker, :name, :sector)
+            ON CONFLICT (entity_id) DO UPDATE SET
+              ticker=EXCLUDED.ticker,
+              sector=COALESCE(EXCLUDED.sector, entities.sector)
             """,
-            {"entity_id": entity_id, "ticker": ticker, "name": ticker},
+            {"entity_id": entity_id, "ticker": ticker, "name": ticker, "sector": sector},
         )
         await execute(
             session,
