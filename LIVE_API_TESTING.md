@@ -69,7 +69,7 @@ async def test_kalshi_fetch_ticks_live():
     """Test Kalshi orderbook fetching."""
     connector = KalshiConnector(
         api_key=settings.kalshi_api_key,
-        api_secret=settings.kalshi_secret,
+        api_secret=settings.kalshi_api_secret,
     )
     
     try:
