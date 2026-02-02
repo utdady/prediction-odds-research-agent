@@ -117,7 +117,7 @@ try:
             
             # Monte Carlo Risk Analysis
             st.subheader("Monte Carlo Risk Analysis")
-            if st.button("Run Monte Carlo Simulation"):
+            if st.button("Run Monte Carlo Simulation", key="mc_backtest"):
                 try:
                     from pm_agent.risk.monte_carlo import run_monte_carlo_simulation
                     from pm_agent.backtest.engine import BacktestConfig, CostModel
@@ -185,7 +185,7 @@ try:
             
             # Tear Sheet Generation
             st.subheader("Generate Tear Sheet")
-            if st.button("Generate PDF Tear Sheet"):
+            if st.button("Generate PDF Tear Sheet", key="tear_sheet"):
                 try:
                     from pm_agent.reports.tear_sheet import generate_tear_sheet
                     
@@ -235,7 +235,7 @@ try:
         stop_loss = st.sidebar.slider("Stop Loss %", -0.20, 0.0, -0.05, 0.01)
         take_profit = st.sidebar.slider("Take Profit %", 0.0, 0.50, 0.10, 0.01)
         
-        if st.button("Run Custom Backtest"):
+        if st.button("Run Custom Backtest", key="custom_backtest"):
             try:
                 from pm_agent.backtest.engine import run_event_driven_backtest, BacktestConfig, CostModel, sharpe, max_drawdown
                 from pm_agent.config import settings
@@ -305,7 +305,7 @@ try:
         
         # Monte Carlo Risk Analysis
         st.subheader("Monte Carlo Risk Analysis")
-        if st.button("Run Monte Carlo Simulation"):
+        if st.button("Run Monte Carlo Simulation", key="mc_diagnostics"):
             try:
                 from pm_agent.risk.monte_carlo import run_monte_carlo_simulation
                 from pm_agent.backtest.engine import BacktestConfig, CostModel
@@ -339,7 +339,7 @@ try:
                     
                     # Distribution plot
                     fig = px.histogram(
-                        x=results['results'],
+                        x=results['simulation_results'],
                         nbins=50,
                         title="Monte Carlo Return Distribution",
                         labels={'x': 'Final Equity', 'y': 'Frequency'}
@@ -399,10 +399,13 @@ try:
                     s.strength as predicted_prob,
                     CASE WHEN bt.pnl > 0 THEN 1 ELSE 0 END as actual_outcome
                 FROM signals s
-                LEFT JOIN backtest_trades bt ON s.entity_id = bt.entity_id 
+                INNER JOIN backtest_trades bt ON s.entity_id = bt.entity_id 
                     AND DATE(s.ts) = DATE(bt.entry_ts)
                 WHERE s.strategy = 'ModelV1'
             """, engine)
+            
+            # Filter for signals with actual backtest results
+            cal_df = cal_df[cal_df['actual_outcome'].notna()]
             
             if len(cal_df) > 10:
                 # Brier score decomposition
@@ -423,25 +426,69 @@ try:
                 
                 calibration.columns = ['prob_bin', 'pred_mean', 'count', 'obs_mean', 'obs_std']
                 
+                # Convert prob_bin to string to avoid categorical issues
+                calibration['prob_bin'] = calibration['prob_bin'].astype(str)
+                
                 # Calculate confidence intervals (95%)
                 calibration['ci_lower'] = calibration['obs_mean'] - 1.96 * calibration['obs_std'] / np.sqrt(calibration['count'])
                 calibration['ci_upper'] = calibration['obs_mean'] + 1.96 * calibration['obs_std'] / np.sqrt(calibration['count'])
-                calibration = calibration.fillna(0)
                 
-                # Reliability diagram
-                fig = px.scatter(
-                    calibration,
-                    x='pred_mean',
-                    y='obs_mean',
-                    size='count',
+                # Fill NaN only on numeric columns (not on prob_bin which is now string)
+                numeric_cols = ['pred_mean', 'count', 'obs_mean', 'obs_std', 'ci_lower', 'ci_upper']
+                for col in numeric_cols:
+                    if col in calibration.columns:
+                        calibration[col] = calibration[col].fillna(0)
+                
+                # Remove any rows with invalid data
+                calibration = calibration[calibration['count'] > 0].copy()
+                
+                # Reset index to ensure alignment
+                calibration = calibration.reset_index(drop=True)
+                
+                # Calculate error bars directly from the filtered dataframe
+                error_upper = (calibration['ci_upper'] - calibration['obs_mean']).fillna(0).values
+                error_lower = (calibration['obs_mean'] - calibration['ci_lower']).fillna(0).values
+                
+                # Use go.Scatter directly for better control
+                import plotly.graph_objects as go
+                
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(
+                    x=calibration['pred_mean'].values,
+                    y=calibration['obs_mean'].values,
+                    mode='markers',
+                    marker=dict(
+                        size=calibration['count'].values * 2,  # Scale size for visibility
+                        color=calibration['obs_mean'].values,
+                        colorscale='Viridis',
+                        showscale=True,
+                        colorbar=dict(title="Observed Frequency")
+                    ),
                     error_y=dict(
                         type='data',
                         symmetric=False,
-                        array=calibration['ci_upper'] - calibration['obs_mean'],
-                        arrayminus=calibration['obs_mean'] - calibration['ci_lower']
+                        array=error_upper,
+                        arrayminus=error_lower,
+                        visible=True
                     ),
+                    name='Calibration Points',
+                    text=[f"Count: {c}" for c in calibration['count'].values],
+                    hovertemplate='Predicted: %{x:.3f}<br>Observed: %{y:.3f}<br>Count: %{text}<extra></extra>'
+                ))
+                
+                # Add perfect calibration line
+                fig.add_shape(
+                    type="line",
+                    x0=0, y0=0, x1=1, y1=1,
+                    line=dict(dash="dash", color="gray", width=2),
+                    name="Perfect Calibration"
+                )
+                
+                fig.update_layout(
                     title="Reliability Diagram with Confidence Intervals",
-                    labels={'pred_mean': 'Predicted Probability', 'obs_mean': 'Observed Frequency'}
+                    xaxis_title="Predicted Probability",
+                    yaxis_title="Observed Frequency",
+                    hovermode='closest'
                 )
                 fig.add_shape(
                     type="line",
@@ -471,7 +518,7 @@ try:
         
         # Market Regime Detection
         st.subheader("Market Regime Detection")
-        if st.button("Detect Current Regime"):
+        if st.button("Detect Current Regime", key="detect_regime"):
             try:
                 from pm_agent.features.regime import detect_market_regime, get_regime_adaptive_threshold
                 from pm_agent.prices.provider import LocalCSVPriceProvider
@@ -504,7 +551,7 @@ try:
         
         # Arbitrage Detection
         st.subheader("Cross-Venue Arbitrage Detection")
-        if st.button("Scan for Arbitrage Opportunities"):
+        if st.button("Scan for Arbitrage Opportunities", key="scan_arbitrage"):
             try:
                 from pm_agent.arbitrage.detector import ArbitrageDetector
                 
@@ -563,31 +610,110 @@ try:
         
         # Sentiment Analysis
         st.subheader("News Sentiment Analysis")
-        ticker_input = st.text_input("Enter ticker symbol", value="AAPL")
-        if st.button("Analyze Sentiment"):
+        ticker_input = st.text_input("Enter ticker symbol", value="TSLA")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            lookback_hours = st.slider("Lookback hours", 1, 168, 24)
+        with col2:
+            use_finbert = st.checkbox("Use FinBERT (requires transformers)", value=False)
+        
+        if st.button("Analyze Sentiment", key="analyze_sentiment"):
             try:
                 from pm_agent.features.sentiment import SentimentAnalyzer
                 import asyncio
                 
-                analyzer = SentimentAnalyzer(use_finbert=False)  # Set to True if transformers installed
-                
-                # Run async function
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-                sentiment_score = loop.run_until_complete(analyzer.get_news_sentiment(ticker_input, lookback_hours=24))
-                loop.close()
+                with st.spinner(f"Analyzing sentiment for {ticker_input}..."):
+                    analyzer = SentimentAnalyzer(use_finbert=use_finbert)
+                    
+                    # Run async function - use thread-based approach to avoid event loop conflicts
+                    import threading
+                    result_container = {"score": None, "error": None}
+                    
+                    def run_async():
+                        try:
+                            # Create a new event loop in this thread
+                            loop = asyncio.new_event_loop()
+                            asyncio.set_event_loop(loop)
+                            try:
+                                result_container["score"] = loop.run_until_complete(
+                                    analyzer.get_news_sentiment(ticker_input.upper(), lookback_hours=lookback_hours)
+                                )
+                            finally:
+                                loop.close()
+                        except Exception as e:
+                            result_container["error"] = str(e)
+                            import traceback
+                            result_container["traceback"] = traceback.format_exc()
+                    
+                    thread = threading.Thread(target=run_async)
+                    thread.start()
+                    thread.join(timeout=30)  # 30 second timeout
+                    
+                    if thread.is_alive():
+                        st.error("Sentiment analysis timed out after 30 seconds")
+                        sentiment_score = 0.0
+                    elif result_container["error"]:
+                        st.error(f"Error fetching sentiment: {result_container['error']}")
+                        if "traceback" in result_container:
+                            with st.expander("Error details"):
+                                st.code(result_container["traceback"])
+                        sentiment_score = 0.0
+                    elif result_container["score"] is not None:
+                        sentiment_score = result_container["score"]
+                    else:
+                        st.warning("Sentiment analysis returned no result")
+                        sentiment_score = 0.0
                 
                 st.metric("Sentiment Score", f"{sentiment_score:.3f}")
-                st.info("Score range: -1.0 (very negative) to +1.0 (very positive)")
+                st.caption("Score range: -1.0 (very negative) to +1.0 (very positive)")
                 
-                if sentiment_score > 0.3:
-                    st.success("Positive sentiment detected")
+                # Display sentiment interpretation with more granular feedback
+                if sentiment_score > 0.5:
+                    st.success(f"✅ Strongly Positive sentiment ({sentiment_score:.3f})")
+                elif sentiment_score > 0.3:
+                    st.success(f"✅ Positive sentiment ({sentiment_score:.3f})")
+                elif sentiment_score > 0.1:
+                    st.info(f"📈 Slightly Positive sentiment ({sentiment_score:.3f})")
+                elif sentiment_score < -0.5:
+                    st.error(f"❌ Strongly Negative sentiment ({sentiment_score:.3f})")
                 elif sentiment_score < -0.3:
-                    st.error("Negative sentiment detected")
+                    st.error(f"❌ Negative sentiment ({sentiment_score:.3f})")
+                elif sentiment_score < -0.1:
+                    st.info(f"📉 Slightly Negative sentiment ({sentiment_score:.3f})")
                 else:
-                    st.info("Neutral sentiment")
+                    st.info(f"⚖️ Neutral sentiment ({sentiment_score:.3f})")
+                    
+                # Show note about FinBERT
+                if not use_finbert:
+                    st.caption("💡 Tip: Enable FinBERT for more accurate sentiment analysis (requires: pip install transformers torch)")
+                    
+                # Debug info (if score is 0, show why)
+                if abs(sentiment_score) < 0.01:
+                    with st.expander("ℹ️ Why is the score 0.0?"):
+                        st.write("A score of 0.0 typically means:")
+                        st.write("1. **No recent news articles found** - Try increasing the lookback hours")
+                        st.write("2. **Articles had mixed/neutral sentiment** - No clear positive or negative keywords")
+                        st.write("3. **News feed unavailable** - Google News RSS may be blocked or rate-limited")
+                        st.write(f"4. **Network issues** - Check your internet connection")
+                        st.write(f"\n**Current settings:**")
+                        st.write(f"- Ticker: {ticker_input.upper()}")
+                        st.write(f"- Lookback: {lookback_hours} hours")
+                        st.write(f"- FinBERT: {'Enabled' if use_finbert else 'Disabled (using keyword-based)'}")
+                    
+                # Debug info (if score is 0, show why)
+                if abs(sentiment_score) < 0.01:
+                    st.warning("⚠️ Sentiment score is near zero. This could mean:")
+                    st.write("- No recent news articles found")
+                    st.write("- Articles had mixed/neutral sentiment")
+                    st.write("- News feed may be unavailable")
+                    st.write(f"Try increasing lookback hours (currently {lookback_hours}h) or check if news is available for {ticker_input}")
+                    
             except Exception as e:
                 st.error(f"Sentiment analysis failed: {e}")
+                import traceback
+                with st.expander("Error details"):
+                    st.code(traceback.format_exc())
                 st.info("Note: For advanced sentiment analysis, install: pip install transformers torch")
     
     with tab6:
@@ -686,27 +812,27 @@ try:
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            if st.button("📊 Show All Companies"):
+            if st.button("📊 Show All Companies", key="show_companies"):
                 st.session_state.chat_history.append({"role": "user", "content": "show all companies"})
                 st.rerun()
         
         with col2:
-            if st.button("📈 Recent Signals"):
+            if st.button("📈 Recent Signals", key="recent_signals"):
                 st.session_state.chat_history.append({"role": "user", "content": "show signals"})
                 st.rerun()
         
         with col3:
-            if st.button("📉 Backtest Results"):
+            if st.button("📉 Backtest Results", key="backtest_results"):
                 st.session_state.chat_history.append({"role": "user", "content": "show backtest results"})
                 st.rerun()
         
         with col4:
-            if st.button("❓ Help"):
+            if st.button("❓ Help", key="help_btn"):
                 st.session_state.chat_history.append({"role": "user", "content": "help"})
                 st.rerun()
 
         # Clear chat button
-        if st.button("🗑️ Clear Chat"):
+        if st.button("🗑️ Clear Chat", key="clear_chat"):
             st.session_state.chat_history = []
             st.rerun()
         
@@ -740,7 +866,7 @@ try:
 
         if analysis_type == "Daily Digest":
             st.subheader("📰 Daily Market Digest")
-            if st.button("Generate Today's Digest"):
+            if st.button("Generate Today's Digest", key="daily_digest"):
                 with st.spinner("Analyzing market data..."):
                     digest = analyst.get_daily_digest()
                     st.markdown(digest)
@@ -753,7 +879,7 @@ try:
             with col2:
                 threshold = st.slider("Significance Threshold", 0.01, 0.20, 0.08, 0.01)
 
-            if st.button("Analyze All Stocks"):
+            if st.button("Analyze All Stocks", key="analyze_all_stocks"):
                 with st.spinner("Analyzing stocks..."):
                     results = analyst.analyze_stock_performance(
                         ticker=None,
@@ -820,7 +946,7 @@ try:
             available_tickers = tickers_df["ticker"].tolist()
             ticker = st.selectbox("Select Stock", available_tickers)
 
-            if st.button("Get Stock Outlook"):
+            if st.button("Get Stock Outlook", key="get_stock_outlook"):
                 with st.spinner(f"Analyzing {ticker}..."):
                     outlook = analyst.get_stock_outlook(ticker)
                     if outlook["outlook"] != "unknown":
@@ -887,7 +1013,7 @@ try:
                 st.warning("Please select at least 2 stocks to compare")
             elif len(selected_tickers) > 5:
                 st.warning("Please select at most 5 stocks to compare")
-            elif st.button("Compare Stocks"):
+            elif st.button("Compare Stocks", key="compare_stocks"):
                 with st.spinner("Comparing stocks..."):
                     comparison = analyst.compare_stocks(selected_tickers)
                     if comparison["comparison"]:
@@ -911,7 +1037,7 @@ try:
 
         elif analysis_type == "Sector Analysis":
             st.subheader("🏭 Sector Performance Analysis")
-            if st.button("Analyze Sectors"):
+            if st.button("Analyze Sectors", key="analyze_sectors"):
                 with st.spinner("Analyzing sectors..."):
                     sector_results = analyst.get_sector_analysis()
                     if sector_results["sectors"]:
@@ -957,13 +1083,17 @@ try:
                 last_tick = freshness.iloc[0]["last_tick_ts"]
                 
                 if last_feature:
-                    hours_ago = (pd.Timestamp.now() - pd.to_datetime(last_feature)).total_seconds() / 3600
+                    last_feature_ts = pd.to_datetime(last_feature)
+                    now_ts = pd.Timestamp.now(tz=last_feature_ts.tz) if last_feature_ts.tz else pd.Timestamp.now()
+                    hours_ago = (now_ts - last_feature_ts).total_seconds() / 3600
                     with col2:
                         status = "✅ Fresh" if hours_ago < 6 else "⚠️ Stale" if hours_ago < 24 else "❌ Very Stale"
                         st.metric("Features", status, f"{hours_ago:.1f} hours ago")
                 
                 if last_tick:
-                    tick_hours_ago = (pd.Timestamp.now() - pd.to_datetime(last_tick)).total_seconds() / 3600
+                    last_tick_ts = pd.to_datetime(last_tick)
+                    now_ts = pd.Timestamp.now(tz=last_tick_ts.tz) if last_tick_ts.tz else pd.Timestamp.now()
+                    tick_hours_ago = (now_ts - last_tick_ts).total_seconds() / 3600
                     with col3:
                         tick_status = "✅ Fresh" if tick_hours_ago < 1 else "⚠️ Stale" if tick_hours_ago < 6 else "❌ Very Stale"
                         st.metric("Ticks", tick_status, f"{tick_hours_ago:.1f} hours ago")
@@ -977,10 +1107,6 @@ try:
                 SELECT 
                     component,
                     last_run_at,
-                    last_success_at,
-                    last_failure_at,
-                    run_count,
-                    failure_count,
                     is_dirty
                 FROM orchestrator_state
                 ORDER BY component
@@ -988,15 +1114,14 @@ try:
             
             if len(state_df) > 0:
                 # Format timestamps
-                for col in ["last_run_at", "last_success_at", "last_failure_at"]:
-                    if col in state_df.columns:
-                        state_df[col] = pd.to_datetime(state_df[col]).dt.strftime("%Y-%m-%d %H:%M")
+                if "last_run_at" in state_df.columns:
+                    state_df["last_run_at"] = pd.to_datetime(state_df["last_run_at"]).dt.strftime("%Y-%m-%d %H:%M")
                 
                 # Color code dirty status
                 def format_status(row):
                     if row.get("is_dirty"):
                         return "🔴 Dirty"
-                    elif row.get("last_success_at"):
+                    elif row.get("last_run_at") and pd.notna(row.get("last_run_at")):
                         return "✅ Clean"
                     else:
                         return "⚪ Never Run"
@@ -1016,11 +1141,11 @@ try:
                     scope,
                     level,
                     message,
-                    created_at,
+                    ts as created_at,
                     context
                 FROM data_quality_log
-                WHERE created_at >= NOW() - INTERVAL '7 days'
-                ORDER BY created_at DESC
+                WHERE ts >= NOW() - INTERVAL '7 days'
+                ORDER BY ts DESC
                 LIMIT 50
             """, engine)
             

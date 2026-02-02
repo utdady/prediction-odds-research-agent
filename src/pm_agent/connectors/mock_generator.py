@@ -43,8 +43,9 @@ class MockDataGenerator:
             market_id = f"{venue_id.upper()}_{ticker}_EVENT_{i+1:03d}"
             event_id = f"EV_{ticker}_{i+1:03d}"
 
-            # Base market data
-            base_date = datetime(2024, 1, 1) + timedelta(days=i * 2)
+            # Base market data - use recent dates
+            # Start from 7 days ago and spread markets over time
+            base_date = datetime.now() - timedelta(days=7) + timedelta(days=i * 2)
             resolution_date = base_date + timedelta(days=30)
 
             market = {
@@ -85,7 +86,8 @@ class MockDataGenerator:
             scenario: Market condition scenario
         """
         if base_date is None:
-            base_date = datetime(2024, 1, 1)
+            # Use recent dates - start from 7 days ago so latest data is within last day
+            base_date = datetime.now() - timedelta(days=7)
 
         all_ticks = []
 
@@ -117,8 +119,18 @@ class MockDataGenerator:
 
             # Generate time series
             p = p0
+            now = datetime.now()
             for day in range(days):
                 tick_date = base_date + timedelta(days=day)
+                # Cap at current time - ensure we have recent data
+                if tick_date > now:
+                    tick_date = now - timedelta(minutes=30)  # Use 30 minutes ago as latest
+                # Add some randomness to timestamps within the day
+                tick_date = tick_date.replace(
+                    hour=self.rng.integers(0, 24),
+                    minute=self.rng.integers(0, 60),
+                    second=self.rng.integers(0, 60)
+                )
 
                 # Random walk with drift
                 p += drift + self.rng.normal(0, volatility)
@@ -162,20 +174,27 @@ class MockDataGenerator:
         venues = ["kalshi", "polymarket"]
 
         for venue in venues:
-            # Generate markets
-            markets = self.generate_markets(venue, n_markets=15)
+            # Generate more markets to get more features
+            markets = self.generate_markets(venue, n_markets=30)
             market_ids = [m["market_id"] for m in markets]
 
-            # Generate ticks for each scenario
+            # Generate ticks for each scenario with more days
             scenarios = ["trending", "choppy", "volatile", "low_liquidity"]
             all_ticks = []
 
             for scenario in scenarios:
+                # Use recent dates - generate ticks that go up to today
+                # Start from different points so we have historical data
+                days_back = 7 - (scenarios.index(scenario) * 1)  # 7, 6, 5, 4 days ago
+                base_date = datetime.now() - timedelta(days=days_back)
+                # Generate enough days to reach today
+                days_to_generate = days_back + 1
                 scenario_ticks = self.generate_ticks(
                     venue,
-                    market_ids[:4],  # 4 markets per scenario
+                    market_ids[:8],  # 8 markets per scenario (32 total)
+                    base_date=base_date,  # Use recent dates
                     scenario=scenario,
-                    days=12,
+                    days=days_to_generate,  # Generate ticks up to today
                 )
                 all_ticks.extend(scenario_ticks)
 

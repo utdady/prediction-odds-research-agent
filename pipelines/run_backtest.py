@@ -48,7 +48,7 @@ async def run() -> str | None:
 
         await execute(
             session,
-            "INSERT INTO backtest_runs(run_id, config, model_version, notes) VALUES (:run_id, :config::jsonb, :model_version, :notes)",
+            "INSERT INTO backtest_runs(run_id, config, model_version, notes) VALUES (:run_id, CAST(:config AS jsonb), :model_version, :notes)",
             {"run_id": run_id, "config": json.dumps({"max_positions": cfg.max_positions, "holding_days": cfg.holding_days, "cost_model": {"spread_bps": cfg.cost_model.spread_bps, "slippage_bps": cfg.cost_model.slippage_bps}}), "model_version": "rule_v1", "notes": "mock"},
         )
 
@@ -91,7 +91,7 @@ async def run() -> str | None:
             session,
             """
             INSERT INTO backtest_metrics(run_id, cagr, sharpe, sortino, max_drawdown, turnover, hit_rate, avg_win, avg_loss, brier, meta)
-            VALUES (:run_id, :cagr, :sharpe, :sortino, :max_drawdown, :turnover, :hit_rate, :avg_win, :avg_loss, :brier, :meta::jsonb)
+            VALUES (:run_id, :cagr, :sharpe, :sortino, :max_drawdown, :turnover, :hit_rate, :avg_win, :avg_loss, :brier, CAST(:meta AS jsonb))
             ON CONFLICT (run_id) DO UPDATE SET meta=EXCLUDED.meta
             """,
             {**m, "run_id": run_id, "meta": json.dumps(m["meta"])},

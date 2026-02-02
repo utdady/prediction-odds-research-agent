@@ -81,7 +81,16 @@ def run_event_driven_backtest(signals: pd.DataFrame, config: BacktestConfig) -> 
 
     for _, s in signals.iterrows():
         ticker = s["entity_id"]
-        ts = pd.Timestamp(s["ts"], tz="UTC").tz_convert(None).normalize()
+        # Handle timezone-aware or naive timestamps
+        if isinstance(s["ts"], pd.Timestamp):
+            ts = s["ts"]
+        else:
+            ts = pd.Timestamp(s["ts"])
+        # Convert to UTC if timezone-aware, then remove timezone and normalize
+        if ts.tz is not None:
+            ts = ts.tz_convert("UTC").tz_convert(None).normalize()
+        else:
+            ts = ts.normalize()
         signal_date = ts.date()
         entry_date = _next_trading_day(signal_date)
         entry_ts = pd.Timestamp(entry_date)

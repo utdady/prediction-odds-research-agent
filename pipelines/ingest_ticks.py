@@ -61,7 +61,7 @@ async def run() -> None:
                     session,
                     """
                     INSERT INTO data_quality_log(scope, level, message, context)
-                    VALUES (:scope, :level, :message, :context::jsonb)
+                    VALUES (:scope, :level, :message, CAST(:context AS jsonb))
                     """,
                     {
                         "scope": "ingest_ticks",
@@ -77,7 +77,7 @@ async def run() -> None:
                     session,
                     """
                     INSERT INTO data_quality_log(scope, level, message, context)
-                    VALUES (:scope, :level, :message, :context::jsonb)
+                    VALUES (:scope, :level, :message, CAST(:context AS jsonb))
                     """,
                     {
                         "scope": "ingest_ticks",

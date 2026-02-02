@@ -7,7 +7,6 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
-from pipelines.run_all import run as run_all
 from pm_agent.db import get_session
 from pm_agent.sql import execute, fetch_all
 
@@ -86,18 +85,18 @@ async def mark_component_complete(component: str) -> None:
 async def mark_component_failed(component: str) -> None:
     """Mark a component as failed."""
     async with get_session() as session:
+        # Note: last_failure_at column may not exist in all schemas
+        # Just mark as dirty for now
         await execute(
             session,
             """
-            INSERT INTO orchestrator_state(component, last_failure_at, is_dirty)
-            VALUES (:component, :last_failure_at, :is_dirty)
+            INSERT INTO orchestrator_state(component, is_dirty)
+            VALUES (:component, :is_dirty)
             ON CONFLICT (component) DO UPDATE SET
-              last_failure_at=EXCLUDED.last_failure_at,
               is_dirty=EXCLUDED.is_dirty
             """,
             {
                 "component": component,
-                "last_failure_at": datetime.now(timezone.utc),
                 "is_dirty": True,
             },
         )

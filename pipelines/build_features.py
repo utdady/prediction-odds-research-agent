@@ -6,6 +6,7 @@ import numpy as np
 from datetime import datetime, timedelta, timezone
 import pandas as pd
 
+from pm_agent.config import settings
 from pm_agent.db import get_session
 from pm_agent.logging import configure_logging
 import structlog
@@ -102,11 +103,19 @@ async def run() -> None:
 
             # choose snapshot grid using unique tick dates for this entity
             tick_dates = g["tick_ts"].dt.normalize().unique()
+            # Sort to process oldest first
+            tick_dates = sorted(tick_dates)
 
             for day in tick_dates:
-                # use 06:00 UTC snapshots as “end of day” feature time
+                # use 06:00 UTC snapshots as "end of day" feature time
                 snapshot_time = (day + pd.Timedelta(hours=6)).to_pydatetime().replace(tzinfo=timezone.utc)
                 cutoff = get_previous_market_close(snapshot_time)
+                # For mock data, if cutoff is too restrictive, use a more lenient cutoff
+                # (allow features to be built for recent ticks)
+                if settings.mock_mode:
+                    # In mock mode, allow features up to the snapshot time itself
+                    # This ensures we get features for recent data
+                    cutoff = max(cutoff, snapshot_time - timedelta(hours=12))
 
                 valid = g[g["tick_ts"] <= cutoff]
                 if valid.empty:

@@ -4,6 +4,7 @@ import asyncio
 
 import structlog
 
+from agent.orchestrator import mark_component_complete, mark_component_failed
 from pipelines.ingest_markets import run as ingest_markets
 from pipelines.ingest_ticks import run as ingest_ticks
 from pipelines.build_features import run as build_features
@@ -46,9 +47,13 @@ async def run() -> dict[str, str]:
             await pipeline_func()
             pipeline_results[name] = "success"
             log.info("pipeline_done", pipeline=name, status="success")
+            # Update orchestrator state
+            await mark_component_complete(name)
         except Exception as e:  # pragma: no cover - defensive logging
             log.error("pipeline_failed", pipeline=name, error=str(e))
             pipeline_results[name] = "failed"
+            # Update orchestrator state
+            await mark_component_failed(name)
             if name in critical_pipelines:
                 # For critical steps, fail fast
                 raise
