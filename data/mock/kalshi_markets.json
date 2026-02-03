@@ -2,241 +2,241 @@
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
     "event_id": "EV_AAPL_001",
-    "title": "Will AAPL close above $150 by 2026-02-25?",
+    "title": "Will AAPL close above $150 by 2026-02-26?",
     "description": "Prediction market for AAPL stock price",
     "status": "active",
-    "resolution_ts": "2026-02-25T00:05:49.252416Z"
+    "resolution_ts": "2026-02-26T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
     "event_id": "EV_MSFT_002",
-    "title": "Will MSFT close above $150 by 2026-02-27?",
+    "title": "Will MSFT close above $150 by 2026-02-28?",
     "description": "Prediction market for MSFT stock price",
     "status": "active",
-    "resolution_ts": "2026-02-27T00:05:49.252416Z"
+    "resolution_ts": "2026-02-28T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
     "event_id": "EV_GOOGL_003",
-    "title": "Will GOOGL close above $150 by 2026-03-01?",
+    "title": "Will GOOGL close above $150 by 2026-03-02?",
     "description": "Prediction market for GOOGL stock price",
     "status": "active",
-    "resolution_ts": "2026-03-01T00:05:49.252416Z"
+    "resolution_ts": "2026-03-02T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
     "event_id": "EV_TSLA_004",
-    "title": "Will TSLA close above $150 by 2026-03-03? [LOW LIQUIDITY]",
+    "title": "Will TSLA close above $150 by 2026-03-04? [LOW LIQUIDITY]",
     "description": "Prediction market for TSLA stock price",
     "status": "active",
-    "resolution_ts": "2026-03-03T00:05:49.252416Z"
+    "resolution_ts": "2026-03-04T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
     "event_id": "EV_AMZN_005",
-    "title": "Will AMZN close above $150 by 2026-03-05?",
+    "title": "Will AMZN close above $150 by 2026-03-06?",
     "description": "Prediction market for AMZN stock price",
     "status": "failed",
-    "resolution_ts": "2026-03-05T00:05:49.252416Z"
+    "resolution_ts": "2026-03-06T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
     "event_id": "EV_NVDA_006",
-    "title": "Will NVDA close above $150 by 2026-03-07?",
+    "title": "Will NVDA close above $150 by 2026-03-08?",
     "description": "Prediction market for NVDA stock price",
     "status": "active",
-    "resolution_ts": "2026-03-07T00:05:49.252416Z"
+    "resolution_ts": "2026-03-08T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
     "event_id": "EV_META_007",
-    "title": "Will META close above $150 by 2026-03-09?",
+    "title": "Will META close above $150 by 2026-03-10?",
     "description": "Prediction market for META stock price",
     "status": "active",
-    "resolution_ts": "2026-03-09T00:05:49.252416Z"
+    "resolution_ts": "2026-03-10T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
     "event_id": "EV_NFLX_008",
-    "title": "Will NFLX close above $150 by 2026-03-11?",
+    "title": "Will NFLX close above $150 by 2026-03-12?",
     "description": "Prediction market for NFLX stock price",
     "status": "active",
-    "resolution_ts": "2026-03-11T00:05:49.252416Z"
+    "resolution_ts": "2026-03-12T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_009",
     "event_id": "EV_AAPL_009",
-    "title": "Will AAPL close above $150 by 2026-03-13? [LOW LIQUIDITY]",
+    "title": "Will AAPL close above $150 by 2026-03-14? [LOW LIQUIDITY]",
     "description": "Prediction market for AAPL stock price",
     "status": "active",
-    "resolution_ts": "2026-03-13T00:05:49.252416Z"
+    "resolution_ts": "2026-03-14T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_010",
     "event_id": "EV_MSFT_010",
-    "title": "Will MSFT close above $150 by 2026-03-15?",
+    "title": "Will MSFT close above $150 by 2026-03-16?",
     "description": "Prediction market for MSFT stock price",
     "status": "failed",
-    "resolution_ts": "2026-03-15T00:05:49.252416Z"
+    "resolution_ts": "2026-03-16T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_011",
     "event_id": "EV_GOOGL_011",
-    "title": "Will GOOGL close above $150 by 2026-03-17?",
+    "title": "Will GOOGL close above $150 by 2026-03-18?",
     "description": "Prediction market for GOOGL stock price",
     "status": "active",
-    "resolution_ts": "2026-03-17T00:05:49.252416Z"
+    "resolution_ts": "2026-03-18T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_012",
     "event_id": "EV_TSLA_012",
-    "title": "Will TSLA close above $150 by 2026-03-19?",
+    "title": "Will TSLA close above $150 by 2026-03-20?",
     "description": "Prediction market for TSLA stock price",
     "status": "active",
-    "resolution_ts": "2026-03-19T00:05:49.252416Z"
+    "resolution_ts": "2026-03-20T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_013",
     "event_id": "EV_AMZN_013",
-    "title": "Will AMZN close above $150 by 2026-03-21?",
+    "title": "Will AMZN close above $150 by 2026-03-22?",
     "description": "Prediction market for AMZN stock price",
     "status": "active",
-    "resolution_ts": "2026-03-21T00:05:49.252416Z"
+    "resolution_ts": "2026-03-22T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_014",
     "event_id": "EV_NVDA_014",
-    "title": "Will NVDA close above $150 by 2026-03-23? [LOW LIQUIDITY]",
+    "title": "Will NVDA close above $150 by 2026-03-24? [LOW LIQUIDITY]",
     "description": "Prediction market for NVDA stock price",
     "status": "active",
-    "resolution_ts": "2026-03-23T00:05:49.252416Z"
+    "resolution_ts": "2026-03-24T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_META_EVENT_015",
     "event_id": "EV_META_015",
-    "title": "Will META close above $150 by 2026-03-25?",
+    "title": "Will META close above $150 by 2026-03-26?",
     "description": "Prediction market for META stock price",
     "status": "failed",
-    "resolution_ts": "2026-03-25T00:05:49.252416Z"
+    "resolution_ts": "2026-03-26T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_016",
     "event_id": "EV_NFLX_016",
-    "title": "Will NFLX close above $150 by 2026-03-27?",
+    "title": "Will NFLX close above $150 by 2026-03-28?",
     "description": "Prediction market for NFLX stock price",
     "status": "active",
-    "resolution_ts": "2026-03-27T00:05:49.252416Z"
+    "resolution_ts": "2026-03-28T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_017",
     "event_id": "EV_AAPL_017",
-    "title": "Will AAPL close above $150 by 2026-03-29?",
+    "title": "Will AAPL close above $150 by 2026-03-30?",
     "description": "Prediction market for AAPL stock price",
     "status": "active",
-    "resolution_ts": "2026-03-29T00:05:49.252416Z"
+    "resolution_ts": "2026-03-30T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_018",
     "event_id": "EV_MSFT_018",
-    "title": "Will MSFT close above $150 by 2026-03-31?",
+    "title": "Will MSFT close above $150 by 2026-04-01?",
     "description": "Prediction market for MSFT stock price",
     "status": "active",
-    "resolution_ts": "2026-03-31T00:05:49.252416Z"
+    "resolution_ts": "2026-04-01T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_019",
     "event_id": "EV_GOOGL_019",
-    "title": "Will GOOGL close above $150 by 2026-04-02? [LOW LIQUIDITY]",
+    "title": "Will GOOGL close above $150 by 2026-04-03? [LOW LIQUIDITY]",
     "description": "Prediction market for GOOGL stock price",
     "status": "active",
-    "resolution_ts": "2026-04-02T00:05:49.252416Z"
+    "resolution_ts": "2026-04-03T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_020",
     "event_id": "EV_TSLA_020",
-    "title": "Will TSLA close above $150 by 2026-04-04?",
+    "title": "Will TSLA close above $150 by 2026-04-05?",
     "description": "Prediction market for TSLA stock price",
     "status": "failed",
-    "resolution_ts": "2026-04-04T00:05:49.252416Z"
+    "resolution_ts": "2026-04-05T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_021",
     "event_id": "EV_AMZN_021",
-    "title": "Will AMZN close above $150 by 2026-04-06?",
+    "title": "Will AMZN close above $150 by 2026-04-07?",
     "description": "Prediction market for AMZN stock price",
     "status": "active",
-    "resolution_ts": "2026-04-06T00:05:49.252416Z"
+    "resolution_ts": "2026-04-07T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_022",
     "event_id": "EV_NVDA_022",
-    "title": "Will NVDA close above $150 by 2026-04-08?",
+    "title": "Will NVDA close above $150 by 2026-04-09?",
     "description": "Prediction market for NVDA stock price",
     "status": "active",
-    "resolution_ts": "2026-04-08T00:05:49.252416Z"
+    "resolution_ts": "2026-04-09T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_META_EVENT_023",
     "event_id": "EV_META_023",
-    "title": "Will META close above $150 by 2026-04-10?",
+    "title": "Will META close above $150 by 2026-04-11?",
     "description": "Prediction market for META stock price",
     "status": "active",
-    "resolution_ts": "2026-04-10T00:05:49.252416Z"
+    "resolution_ts": "2026-04-11T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_024",
     "event_id": "EV_NFLX_024",
-    "title": "Will NFLX close above $150 by 2026-04-12? [LOW LIQUIDITY]",
+    "title": "Will NFLX close above $150 by 2026-04-13? [LOW LIQUIDITY]",
     "description": "Prediction market for NFLX stock price",
     "status": "active",
-    "resolution_ts": "2026-04-12T00:05:49.252416Z"
+    "resolution_ts": "2026-04-13T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_025",
     "event_id": "EV_AAPL_025",
-    "title": "Will AAPL close above $150 by 2026-04-14?",
+    "title": "Will AAPL close above $150 by 2026-04-15?",
     "description": "Prediction market for AAPL stock price",
     "status": "failed",
-    "resolution_ts": "2026-04-14T00:05:49.252416Z"
+    "resolution_ts": "2026-04-15T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_026",
     "event_id": "EV_MSFT_026",
-    "title": "Will MSFT close above $150 by 2026-04-16?",
+    "title": "Will MSFT close above $150 by 2026-04-17?",
     "description": "Prediction market for MSFT stock price",
     "status": "active",
-    "resolution_ts": "2026-04-16T00:05:49.252416Z"
+    "resolution_ts": "2026-04-17T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_027",
     "event_id": "EV_GOOGL_027",
-    "title": "Will GOOGL close above $150 by 2026-04-18?",
+    "title": "Will GOOGL close above $150 by 2026-04-19?",
     "description": "Prediction market for GOOGL stock price",
     "status": "active",
-    "resolution_ts": "2026-04-18T00:05:49.252416Z"
+    "resolution_ts": "2026-04-19T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_028",
     "event_id": "EV_TSLA_028",
-    "title": "Will TSLA close above $150 by 2026-04-20?",
+    "title": "Will TSLA close above $150 by 2026-04-21?",
     "description": "Prediction market for TSLA stock price",
     "status": "active",
-    "resolution_ts": "2026-04-20T00:05:49.252416Z"
+    "resolution_ts": "2026-04-21T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_029",
     "event_id": "EV_AMZN_029",
-    "title": "Will AMZN close above $150 by 2026-04-22? [LOW LIQUIDITY]",
+    "title": "Will AMZN close above $150 by 2026-04-23? [LOW LIQUIDITY]",
     "description": "Prediction market for AMZN stock price",
     "status": "active",
-    "resolution_ts": "2026-04-22T00:05:49.252416Z"
+    "resolution_ts": "2026-04-23T07:44:40.279416+00:00Z"
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_030",
     "event_id": "EV_NVDA_030",
-    "title": "Will NVDA close above $150 by 2026-04-24?",
+    "title": "Will NVDA close above $150 by 2026-04-25?",
     "description": "Prediction market for NVDA stock price",
     "status": "failed",
-    "resolution_ts": "2026-04-24T00:05:49.252416Z"
+    "resolution_ts": "2026-04-25T07:44:40.279416+00:00Z"
   }
 ]

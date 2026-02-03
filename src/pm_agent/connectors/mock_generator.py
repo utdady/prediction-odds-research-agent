@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Literal
 
@@ -43,9 +43,9 @@ class MockDataGenerator:
             market_id = f"{venue_id.upper()}_{ticker}_EVENT_{i+1:03d}"
             event_id = f"EV_{ticker}_{i+1:03d}"
 
-            # Base market data - use recent dates
+            # Base market data - use recent dates (UTC-aware)
             # Start from 7 days ago and spread markets over time
-            base_date = datetime.now() - timedelta(days=7) + timedelta(days=i * 2)
+            base_date = datetime.now(timezone.utc) - timedelta(days=7) + timedelta(days=i * 2)
             resolution_date = base_date + timedelta(days=30)
 
             market = {
@@ -87,7 +87,11 @@ class MockDataGenerator:
         """
         if base_date is None:
             # Use recent dates - start from 7 days ago so latest data is within last day
-            base_date = datetime.now() - timedelta(days=7)
+            base_date = datetime.now(timezone.utc) - timedelta(days=7)
+        
+        # Ensure base_date is timezone-aware
+        if base_date.tzinfo is None:
+            base_date = base_date.replace(tzinfo=timezone.utc)
 
         all_ticks = []
 
@@ -119,18 +123,47 @@ class MockDataGenerator:
 
             # Generate time series
             p = p0
-            now = datetime.now()
+            now_utc = datetime.now(timezone.utc)  # Use UTC-aware datetime
             for day in range(days):
                 tick_date = base_date + timedelta(days=day)
-                # Cap at current time - ensure we have recent data
-                if tick_date > now:
-                    tick_date = now - timedelta(minutes=30)  # Use 30 minutes ago as latest
-                # Add some randomness to timestamps within the day
-                tick_date = tick_date.replace(
-                    hour=self.rng.integers(0, 24),
-                    minute=self.rng.integers(0, 60),
-                    second=self.rng.integers(0, 60)
-                )
+                
+                # Ensure timezone-aware
+                if tick_date.tzinfo is None:
+                    tick_date = tick_date.replace(tzinfo=timezone.utc)
+                
+                # For the last day, generate ticks up to within the last hour
+                if day == days - 1:
+                    # Last day - generate ticks up to 1 hour ago (safe margin)
+                    max_tick_time = now_utc - timedelta(hours=1)
+                    if tick_date > max_tick_time:
+                        tick_date = max_tick_time
+                elif tick_date > now_utc:
+                    # Any other day that's in the future - cap it
+                    tick_date = now_utc - timedelta(hours=1)
+                
+                # Add some randomness to timestamps within the day (but ensure still in past)
+                if day < days - 1:
+                    # For non-last days, randomize within the day
+                    tick_date = tick_date.replace(
+                        hour=self.rng.integers(0, 24),
+                        minute=self.rng.integers(0, 60),
+                        second=self.rng.integers(0, 60)
+                    )
+                    # Double-check it's still in the past
+                    if tick_date > now_utc:
+                        tick_date = now_utc - timedelta(hours=1)
+                else:
+                    # For last day, randomize but keep within last hour
+                    max_time = now_utc - timedelta(minutes=30)
+                    min_time = now_utc - timedelta(hours=1)
+                    random_offset = timedelta(
+                        minutes=int(self.rng.integers(0, 30)),
+                        seconds=int(self.rng.integers(0, 60))
+                    )
+                    tick_date = min_time + random_offset
+                    # Ensure it's not in the future
+                    if tick_date > max_time:
+                        tick_date = max_time
 
                 # Random walk with drift
                 p += drift + self.rng.normal(0, volatility)
@@ -149,9 +182,17 @@ class MockDataGenerator:
                     # Missing ticks (low liquidity)
                     continue
 
+                # Format timestamp correctly (ISO format with Z suffix for UTC)
+                if tick_date.tzinfo is None:
+                    tick_ts_str = tick_date.isoformat() + "Z"
+                else:
+                    # Already timezone-aware, convert to UTC and format
+                    tick_ts_utc = tick_date.astimezone(timezone.utc)
+                    tick_ts_str = tick_ts_utc.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+                
                 tick = {
                     "market_id": market_id,
-                    "tick_ts": tick_date.isoformat() + "Z",
+                    "tick_ts": tick_ts_str,
                     "yes_bid": round(yes_bid, 4),
                     "yes_ask": round(yes_ask, 4),
                     "yes_mid": round(p, 4),
@@ -183,12 +224,15 @@ class MockDataGenerator:
             all_ticks = []
 
             for scenario in scenarios:
-                # Use recent dates - generate ticks that go up to today
+                # Use recent dates - generate ticks that go up to within last hour
                 # Start from different points so we have historical data
-                days_back = 7 - (scenarios.index(scenario) * 1)  # 7, 6, 5, 4 days ago
-                base_date = datetime.now() - timedelta(days=days_back)
-                # Generate enough days to reach today
-                days_to_generate = days_back + 1
+                days_back = 3 - (scenarios.index(scenario) * 0.5)  # 3, 2.5, 2, 1.5 days ago
+                base_date = datetime.now(timezone.utc) - timedelta(days=int(days_back))
+                # Ensure timezone-aware
+                if base_date.tzinfo is None:
+                    base_date = base_date.replace(tzinfo=timezone.utc)
+                # Generate enough days to reach today (within last hour)
+                days_to_generate = int(days_back) + 1
                 scenario_ticks = self.generate_ticks(
                     venue,
                     market_ids[:8],  # 8 markets per scenario (32 total)
