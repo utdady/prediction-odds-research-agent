@@ -1145,8 +1145,9 @@ try:
                 help="How far back to show data quality issues.",
             )
 
+            # Use string formatting for interval (safe since lookback_hours is validated integer from selectbox)
             dq_df = pd.read_sql(
-                """
+                f"""
                 SELECT 
                     scope,
                     level,
@@ -1154,12 +1155,11 @@ try:
                     ts as created_at,
                     context
                 FROM data_quality_log
-                WHERE ts >= NOW() - (:hours * INTERVAL '1 hour')
+                WHERE ts >= NOW() - INTERVAL '{int(lookback_hours)} hours'
                 ORDER BY ts DESC
                 LIMIT 200
                 """,
                 engine,
-                params={"hours": int(lookback_hours)},
             )
             
             if len(dq_df) > 0:
