@@ -40,11 +40,18 @@ class KalshiConnector:
             log.info("kalshi_public_mode", message="Using public endpoints (no authentication)")
 
     def _generate_auth_headers(self, method: str, path: str, body: str = "") -> dict[str, str]:
-        """Generate authentication headers for Kalshi API."""
+        """
+        Generate authentication headers for Kalshi API.
+        
+        Fixed: Uses separate headers (Kalshi-Access-Key and Kalshi-Access-Signature)
+        instead of base64(key:sig) in Authorization header.
+        Fixed: Timestamp in milliseconds (not seconds).
+        """
         if not self.api_key or not self.api_secret:
             return {}
 
-        timestamp = str(int(time.time()))
+        # FIXED: Use milliseconds for timestamp
+        timestamp = str(int(time.time() * 1000))
         message = f"{timestamp}{method}{path}{body}"
         signature = hmac.new(
             self.api_secret.encode(),
@@ -52,10 +59,10 @@ class KalshiConnector:
             hashlib.sha256
         ).hexdigest()
 
-        auth_string = base64.b64encode(f"{self.api_key}:{signature}".encode()).decode()
-
+        # FIXED: Use separate headers instead of base64(key:sig)
         return {
-            "Authorization": f"Basic {auth_string}",
+            "Kalshi-Access-Key": self.api_key,
+            "Kalshi-Access-Signature": signature,
             "Kalshi-Access-Timestamp": timestamp,
         }
 
