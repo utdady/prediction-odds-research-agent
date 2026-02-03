@@ -1136,7 +1136,17 @@ try:
         # Data quality logs
         st.subheader("🔍 Data Quality Issues")
         try:
-            dq_df = pd.read_sql("""
+            # Default to a shorter lookback so old mock-data issues don't dominate the UI.
+            lookback_hours = st.selectbox(
+                "Lookback window",
+                options=[1, 6, 24, 72, 168],
+                index=2,  # 24h
+                key="dq_lookback_hours",
+                help="How far back to show data quality issues.",
+            )
+
+            dq_df = pd.read_sql(
+                """
                 SELECT 
                     scope,
                     level,
@@ -1144,25 +1154,28 @@ try:
                     ts as created_at,
                     context
                 FROM data_quality_log
-                WHERE ts >= NOW() - INTERVAL '7 days'
+                WHERE ts >= NOW() - (:hours * INTERVAL '1 hour')
                 ORDER BY ts DESC
-                LIMIT 50
-            """, engine)
+                LIMIT 200
+                """,
+                engine,
+                params={"hours": int(lookback_hours)},
+            )
             
             if len(dq_df) > 0:
                 st.dataframe(dq_df, use_container_width=True)
                 
                 # Summary
-                error_count = len(dq_df[dq_df["level"] == "error"])
-                warning_count = len(dq_df[dq_df["level"] == "warning"])
+                error_count = int((dq_df["level"] == "error").sum())
+                warning_count = int((dq_df["level"] == "warning").sum())
                 
                 col1, col2 = st.columns(2)
                 with col1:
-                    st.metric("Errors (7d)", error_count)
+                    st.metric(f"Errors ({lookback_hours}h)", error_count)
                 with col2:
-                    st.metric("Warnings (7d)", warning_count)
+                    st.metric(f"Warnings ({lookback_hours}h)", warning_count)
             else:
-                st.success("✅ No data quality issues in the last 7 days")
+                st.success(f"✅ No data quality issues in the last {lookback_hours} hours")
         except Exception as e:
             st.warning(f"Could not load data quality logs: {e}")
         
