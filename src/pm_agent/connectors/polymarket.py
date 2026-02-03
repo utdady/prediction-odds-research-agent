@@ -7,6 +7,7 @@ from typing import Any
 import httpx
 import structlog
 
+from pm_agent.connectors.rate_limit import POLYMARKET_RATE_LIMITER, retry_with_backoff
 from pm_agent.schemas import NormalizedMarket, NormalizedTick
 
 log = structlog.get_logger(__name__)
@@ -22,13 +23,18 @@ class PolymarketConnector:
         Initialize Polymarket connector.
         
         Args:
-            api_key: Optional API key (not always required for public data)
+            api_key: Optional API key. Public GraphQL endpoints (CLOB/orderbook) work without auth.
+                     Auth only needed for private endpoints (trading, account info).
         """
         self.api_key = api_key
+        self.use_auth = bool(api_key)
         headers: dict[str, str] = {}
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
         self.client = httpx.AsyncClient(timeout=30.0, headers=headers)
+        
+        if not self.use_auth:
+            log.info("polymarket_public_mode", message="Using public GraphQL endpoints (no authentication)")
 
     async def _graphql_query(self, query: str, variables: dict[str, Any] | None = None) -> dict[str, Any]:
         """Execute a GraphQL query."""
@@ -39,6 +45,7 @@ class PolymarketConnector:
         response.raise_for_status()
         return response.json()
 
+    @retry_with_backoff(max_retries=3, initial_delay=1.0)
     async def fetch_markets(
         self,
         limit: int = 100,
@@ -51,6 +58,7 @@ class PolymarketConnector:
             limit: Maximum number of markets to fetch
             active: Only fetch active markets
         """
+        await POLYMARKET_RATE_LIMITER.acquire()
         try:
             query = """
             query GetMarkets($limit: Int, $active: Boolean) {
@@ -109,6 +117,7 @@ class PolymarketConnector:
         all_ticks: list[NormalizedTick] = []
 
         for market_id in market_ids:
+            await POLYMARKET_RATE_LIMITER.acquire()
             try:
                 # Fetch orderbook for this market
                 query = """

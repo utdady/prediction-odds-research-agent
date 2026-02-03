@@ -19,7 +19,10 @@ class Settings(BaseSettings):
 
     mock_mode: bool = True
 
-    # API credentials for live prediction markets
+    # API credentials for live prediction markets (OPTIONAL - public endpoints work without auth)
+    # Kalshi: Public market data endpoints work without authentication
+    # Polymarket: CLOB GraphQL endpoints work without authentication
+    # Auth only needed for private endpoints (trading, account info)
     kalshi_api_key: str | None = None
     kalshi_api_secret: str | None = None
     polymarket_api_key: str | None = None

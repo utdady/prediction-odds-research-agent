@@ -11,6 +11,7 @@ from typing import Any
 import httpx
 import structlog
 
+from pm_agent.connectors.rate_limit import KALSHI_RATE_LIMITER, retry_with_backoff
 from pm_agent.schemas import NormalizedMarket, NormalizedTick
 
 log = structlog.get_logger(__name__)
@@ -26,12 +27,17 @@ class KalshiConnector:
         Initialize Kalshi connector.
         
         Args:
-            api_key: Kalshi API key (from https://trading-api.kalshi.com/)
-            api_secret: Kalshi API secret
+            api_key: Optional Kalshi API key (for authenticated endpoints).
+                     If None, uses public market data endpoints (no auth required).
+            api_secret: Optional Kalshi API secret (required if api_key provided)
         """
         self.api_key = api_key
         self.api_secret = api_secret
+        self.use_auth = bool(api_key and api_secret)
         self.client = httpx.AsyncClient(timeout=30.0)
+        
+        if not self.use_auth:
+            log.info("kalshi_public_mode", message="Using public endpoints (no authentication)")
 
     def _generate_auth_headers(self, method: str, path: str, body: str = "") -> dict[str, str]:
         """Generate authentication headers for Kalshi API."""
@@ -53,6 +59,7 @@ class KalshiConnector:
             "Kalshi-Access-Timestamp": timestamp,
         }
 
+    @retry_with_backoff(max_retries=3, initial_delay=1.0)
     async def fetch_markets(
         self,
         limit: int = 100,
@@ -67,6 +74,7 @@ class KalshiConnector:
             status: Market status filter (open, closed, etc.)
             event_ticker: Optional event ticker filter
         """
+        await KALSHI_RATE_LIMITER.acquire()
         try:
             path = "/markets"
             params: dict[str, Any] = {
@@ -121,6 +129,7 @@ class KalshiConnector:
         all_ticks: list[NormalizedTick] = []
 
         for market_id in market_ids:
+            await KALSHI_RATE_LIMITER.acquire()
             try:
                 path = f"/markets/{market_id}/orderbook"
                 headers = self._generate_auth_headers("GET", path)
