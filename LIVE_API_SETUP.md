@@ -5,7 +5,7 @@ This guide explains how to connect to **live** prediction market APIs (Kalshi an
 ## Quick Start
 
 1. **Get API credentials** (see below)
-2. **Create `.env` file** from `.env.example`
+2. **Create `.env` file** from `env.template`
 3. **Set `MOCK_MODE=false`** in `.env`
 4. **Add your API keys** to `.env`
 5. **Run pipelines** - they'll now fetch live data!
@@ -59,6 +59,14 @@ POLYMARKET_API_KEY=your_key  # Optional
 # Check config loads correctly
 $env:PYTHONPATH="src"
 python -c "from pm_agent.config import settings; print(f'Mock mode: {settings.mock_mode}'); print(f'Kalshi key set: {settings.kalshi_api_key is not None}')"
+```
+
+### Create `.env` from template (recommended)
+
+This repo intentionally does **not** commit `.env` (secrets). Use the committed template:
+
+```bash
+Copy-Item env.template .env
 ```
 
 ## Running with Live Data
