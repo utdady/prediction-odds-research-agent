@@ -20,7 +20,7 @@ log = structlog.get_logger(__name__)
 class KalshiConnector:
     """Connector for Kalshi prediction market API."""
 
-    BASE_URL = "https://api.cx.kalshi.com/trade-api/v2"
+    BASE_URL = "https://api.kalshi.co/trade-api/v2"
 
     def __init__(self, api_key: str | None = None, api_secret: str | None = None):
         """

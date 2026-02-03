@@ -48,13 +48,21 @@ class MockDataGenerator:
             base_date = datetime.now(timezone.utc) - timedelta(days=7) + timedelta(days=i * 2)
             resolution_date = base_date + timedelta(days=30)
 
+            # Format resolution_ts correctly (avoid double timezone)
+            if resolution_date.tzinfo is None:
+                resolution_ts_str = resolution_date.isoformat() + "Z"
+            else:
+                # Already timezone-aware, convert to UTC and format
+                resolution_ts_utc = resolution_date.astimezone(timezone.utc)
+                resolution_ts_str = resolution_ts_utc.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+            
             market = {
                 "market_id": market_id,
                 "event_id": event_id,
                 "title": f"Will {ticker} close above $150 by {resolution_date.strftime('%Y-%m-%d')}?",
                 "description": f"Prediction market for {ticker} stock price",
                 "status": "active",
-                "resolution_ts": resolution_date.isoformat() + "Z",
+                "resolution_ts": resolution_ts_str,
             }
 
             # Scenario-specific modifications

@@ -1,7 +1,7 @@
 [
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
-    "tick_ts": "2026-01-31T10:51:05.279Z",
+    "tick_ts": "2026-01-31T10:51:05.755Z",
     "yes_bid": 0.5793,
     "yes_ask": 0.5993,
     "yes_mid": 0.5893,
@@ -13,7 +13,7 @@
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
-    "tick_ts": "2026-02-01T16:44:45.279Z",
+    "tick_ts": "2026-02-01T16:44:45.755Z",
     "yes_bid": 0.5918,
     "yes_ask": 0.6118,
     "yes_mid": 0.6018,
@@ -25,7 +25,7 @@
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
-    "tick_ts": "2026-02-02T20:27:30.279Z",
+    "tick_ts": "2026-02-02T20:27:30.755Z",
     "yes_bid": 0.6261,
     "yes_ask": 0.6461,
     "yes_mid": 0.6361,
@@ -37,7 +37,7 @@
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
-    "tick_ts": "2026-02-03T06:56:04.279Z",
+    "tick_ts": "2026-02-03T09:13:24.755Z",
     "yes_bid": 0.6543,
     "yes_ask": 0.6743,
     "yes_mid": 0.6643,
@@ -49,7 +49,7 @@
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
-    "tick_ts": "2026-01-31T19:51:49.279Z",
+    "tick_ts": "2026-01-31T19:51:49.755Z",
     "yes_bid": 0.5221,
     "yes_ask": 0.5421,
     "yes_mid": 0.5321,
@@ -61,7 +61,7 @@
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
-    "tick_ts": "2026-02-01T16:21:04.279Z",
+    "tick_ts": "2026-02-01T16:21:04.755Z",
     "yes_bid": 0.5303,
     "yes_ask": 0.5503,
     "yes_mid": 0.5403,
@@ -73,7 +73,7 @@
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
-    "tick_ts": "2026-02-02T23:45:11.279Z",
+    "tick_ts": "2026-02-02T23:45:11.755Z",
     "yes_bid": 0.5522,
     "yes_ask": 0.5722,
     "yes_mid": 0.5622,
@@ -85,7 +85,7 @@
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
-    "tick_ts": "2026-02-03T07:00:49.279Z",
+    "tick_ts": "2026-02-03T09:18:09.755Z",
     "yes_bid": 0.5721,
     "yes_ask": 0.5921,
     "yes_mid": 0.5821,
@@ -97,7 +97,7 @@
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
-    "tick_ts": "2026-01-31T21:22:04.279Z",
+    "tick_ts": "2026-01-31T21:22:04.755Z",
     "yes_bid": 0.7161,
     "yes_ask": 0.7361,
     "yes_mid": 0.7261,
@@ -109,7 +109,7 @@
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
-    "tick_ts": "2026-02-01T11:41:28.279Z",
+    "tick_ts": "2026-02-01T11:41:28.755Z",
     "yes_bid": 0.7161,
     "yes_ask": 0.7361,
     "yes_mid": 0.7261,
@@ -121,7 +121,7 @@
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
-    "tick_ts": "2026-02-02T22:26:09.279Z",
+    "tick_ts": "2026-02-02T22:26:09.755Z",
     "yes_bid": 0.7092,
     "yes_ask": 0.7292,
     "yes_mid": 0.7192,
@@ -133,7 +133,7 @@
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
-    "tick_ts": "2026-02-03T07:09:26.280Z",
+    "tick_ts": "2026-02-03T09:26:46.755Z",
     "yes_bid": 0.7304,
     "yes_ask": 0.7504,
     "yes_mid": 0.7404,
@@ -145,7 +145,7 @@
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
-    "tick_ts": "2026-01-31T19:38:08.279Z",
+    "tick_ts": "2026-01-31T19:38:08.755Z",
     "yes_bid": 0.4426,
     "yes_ask": 0.4626,
     "yes_mid": 0.4526,
@@ -157,7 +157,7 @@
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
-    "tick_ts": "2026-02-01T19:47:46.279Z",
+    "tick_ts": "2026-02-01T19:47:46.755Z",
     "yes_bid": 0.4371,
     "yes_ask": 0.4571,
     "yes_mid": 0.4471,
@@ -169,7 +169,7 @@
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
-    "tick_ts": "2026-02-02T15:33:27.279Z",
+    "tick_ts": "2026-02-02T15:33:27.755Z",
     "yes_bid": 0.4479,
     "yes_ask": 0.4679,
     "yes_mid": 0.4579,
@@ -181,7 +181,7 @@
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
-    "tick_ts": "2026-02-03T06:51:46.280Z",
+    "tick_ts": "2026-02-03T09:09:06.755Z",
     "yes_bid": 0.4543,
     "yes_ask": 0.4743,
     "yes_mid": 0.4643,
@@ -193,7 +193,7 @@
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
-    "tick_ts": "2026-01-31T13:38:33.279Z",
+    "tick_ts": "2026-01-31T13:38:33.755Z",
     "yes_bid": 0.5556,
     "yes_ask": 0.5756,
     "yes_mid": 0.5656,
@@ -205,7 +205,7 @@
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
-    "tick_ts": "2026-02-01T13:36:01.279Z",
+    "tick_ts": "2026-02-01T13:36:01.755Z",
     "yes_bid": 0.5717,
     "yes_ask": 0.5917,
     "yes_mid": 0.5817,
@@ -217,7 +217,7 @@
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
-    "tick_ts": "2026-02-02T06:24:59.279Z",
+    "tick_ts": "2026-02-02T06:24:59.755Z",
     "yes_bid": 0.5743,
     "yes_ask": 0.5943,
     "yes_mid": 0.5843,
@@ -229,7 +229,7 @@
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
-    "tick_ts": "2026-02-03T07:10:31.280Z",
+    "tick_ts": "2026-02-03T09:27:51.755Z",
     "yes_bid": 0.6025,
     "yes_ask": 0.6225,
     "yes_mid": 0.6125,
@@ -241,7 +241,7 @@
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
-    "tick_ts": "2026-01-31T06:59:39.279Z",
+    "tick_ts": "2026-01-31T06:59:39.755Z",
     "yes_bid": 0.5323,
     "yes_ask": 0.5523,
     "yes_mid": 0.5423,
@@ -253,7 +253,7 @@
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
-    "tick_ts": "2026-02-01T07:10:20.279Z",
+    "tick_ts": "2026-02-01T07:10:20.755Z",
     "yes_bid": 0.5503,
     "yes_ask": 0.5703,
     "yes_mid": 0.5603,
@@ -265,7 +265,7 @@
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
-    "tick_ts": "2026-02-02T00:41:27.279Z",
+    "tick_ts": "2026-02-02T00:41:27.755Z",
     "yes_bid": 0.5666,
     "yes_ask": 0.5866,
     "yes_mid": 0.5766,
@@ -277,7 +277,7 @@
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
-    "tick_ts": "2026-02-03T07:12:49.280Z",
+    "tick_ts": "2026-02-03T09:30:09.755Z",
     "yes_bid": 0.6012,
     "yes_ask": 0.6212,
     "yes_mid": 0.6112,
@@ -289,7 +289,7 @@
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
-    "tick_ts": "2026-01-31T16:37:36.279Z",
+    "tick_ts": "2026-01-31T16:37:36.755Z",
     "yes_bid": 0.4295,
     "yes_ask": 0.4495,
     "yes_mid": 0.4395,
@@ -301,7 +301,7 @@
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
-    "tick_ts": "2026-02-01T08:20:57.279Z",
+    "tick_ts": "2026-02-01T08:20:57.755Z",
     "yes_bid": 0.4535,
     "yes_ask": 0.4735,
     "yes_mid": 0.4635,
@@ -313,7 +313,7 @@
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
-    "tick_ts": "2026-02-02T10:15:45.279Z",
+    "tick_ts": "2026-02-02T10:15:45.755Z",
     "yes_bid": 0.4624,
     "yes_ask": 0.4824,
     "yes_mid": 0.4724,
@@ -325,7 +325,7 @@
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
-    "tick_ts": "2026-02-03T07:14:27.280Z",
+    "tick_ts": "2026-02-03T09:31:47.755Z",
     "yes_bid": 0.4743,
     "yes_ask": 0.4943,
     "yes_mid": 0.4843,
@@ -337,7 +337,7 @@
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
-    "tick_ts": "2026-01-31T10:42:12.279Z",
+    "tick_ts": "2026-01-31T10:42:12.755Z",
     "yes_bid": 0.6788,
     "yes_ask": 0.6988,
     "yes_mid": 0.6888,
@@ -349,7 +349,7 @@
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
-    "tick_ts": "2026-02-01T13:10:27.279Z",
+    "tick_ts": "2026-02-01T13:10:27.755Z",
     "yes_bid": 0.6994,
     "yes_ask": 0.7194,
     "yes_mid": 0.7094,
@@ -361,7 +361,7 @@
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
-    "tick_ts": "2026-02-02T20:39:25.279Z",
+    "tick_ts": "2026-02-02T20:39:25.755Z",
     "yes_bid": 0.719,
     "yes_ask": 0.739,
     "yes_mid": 0.729,
@@ -373,7 +373,7 @@
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
-    "tick_ts": "2026-02-03T06:47:18.281Z",
+    "tick_ts": "2026-02-03T09:04:38.755Z",
     "yes_bid": 0.7176,
     "yes_ask": 0.7376,
     "yes_mid": 0.7276,
@@ -385,7 +385,7 @@
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
-    "tick_ts": "2026-02-01T04:29:11.281Z",
+    "tick_ts": "2026-02-01T04:29:11.755Z",
     "yes_bid": 0.312,
     "yes_ask": 0.332,
     "yes_mid": 0.322,
@@ -397,7 +397,7 @@
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
-    "tick_ts": "2026-02-02T07:10:35.281Z",
+    "tick_ts": "2026-02-02T07:10:35.755Z",
     "yes_bid": 0.3024,
     "yes_ask": 0.3224,
     "yes_mid": 0.3124,
@@ -409,7 +409,7 @@
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
-    "tick_ts": "2026-02-03T07:14:14.281Z",
+    "tick_ts": "2026-02-03T09:31:34.755Z",
     "yes_bid": 0.2818,
     "yes_ask": 0.3018,
     "yes_mid": 0.2918,
@@ -421,7 +421,7 @@
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
-    "tick_ts": "2026-02-01T03:57:25.281Z",
+    "tick_ts": "2026-02-01T03:57:25.755Z",
     "yes_bid": 0.3038,
     "yes_ask": 0.3238,
     "yes_mid": 0.3138,
@@ -433,7 +433,7 @@
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
-    "tick_ts": "2026-02-02T11:16:29.281Z",
+    "tick_ts": "2026-02-02T11:16:29.755Z",
     "yes_bid": 0.3475,
     "yes_ask": 0.3675,
     "yes_mid": 0.3575,
@@ -445,7 +445,7 @@
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
-    "tick_ts": "2026-02-03T06:49:14.281Z",
+    "tick_ts": "2026-02-03T09:06:34.755Z",
     "yes_bid": 0.3156,
     "yes_ask": 0.3356,
     "yes_mid": 0.3256,
@@ -457,7 +457,7 @@
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
-    "tick_ts": "2026-02-01T13:31:50.281Z",
+    "tick_ts": "2026-02-01T13:31:50.755Z",
     "yes_bid": 0.4205,
     "yes_ask": 0.4405,
     "yes_mid": 0.4305,
@@ -469,7 +469,7 @@
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
-    "tick_ts": "2026-02-02T10:00:53.281Z",
+    "tick_ts": "2026-02-02T10:00:53.755Z",
     "yes_bid": 0.4181,
     "yes_ask": 0.4381,
     "yes_mid": 0.4281,
@@ -481,7 +481,7 @@
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
-    "tick_ts": "2026-02-03T06:53:46.281Z",
+    "tick_ts": "2026-02-03T09:11:06.755Z",
     "yes_bid": 0.4108,
     "yes_ask": 0.4308,
     "yes_mid": 0.4208,
@@ -493,7 +493,7 @@
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
-    "tick_ts": "2026-02-01T17:43:56.281Z",
+    "tick_ts": "2026-02-01T17:43:56.755Z",
     "yes_bid": 0.5685,
     "yes_ask": 0.5885,
     "yes_mid": 0.5785,
@@ -505,7 +505,7 @@
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
-    "tick_ts": "2026-02-02T18:58:13.281Z",
+    "tick_ts": "2026-02-02T18:58:13.755Z",
     "yes_bid": 0.554,
     "yes_ask": 0.574,
     "yes_mid": 0.564,
@@ -517,7 +517,7 @@
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
-    "tick_ts": "2026-02-03T07:01:02.281Z",
+    "tick_ts": "2026-02-03T09:18:22.755Z",
     "yes_bid": 0.5417,
     "yes_ask": 0.5617,
     "yes_mid": 0.5517,
@@ -529,7 +529,7 @@
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
-    "tick_ts": "2026-02-01T04:57:38.281Z",
+    "tick_ts": "2026-02-01T04:57:38.755Z",
     "yes_bid": 0.4145,
     "yes_ask": 0.4345,
     "yes_mid": 0.4245,
@@ -541,7 +541,7 @@
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
-    "tick_ts": "2026-02-02T06:59:56.281Z",
+    "tick_ts": "2026-02-02T06:59:56.755Z",
     "yes_bid": 0.4212,
     "yes_ask": 0.4412,
     "yes_mid": 0.4312,
@@ -553,7 +553,7 @@
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
-    "tick_ts": "2026-02-03T06:53:06.281Z",
+    "tick_ts": "2026-02-03T09:10:26.755Z",
     "yes_bid": 0.402,
     "yes_ask": 0.422,
     "yes_mid": 0.412,
@@ -565,7 +565,7 @@
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
-    "tick_ts": "2026-02-01T20:53:13.281Z",
+    "tick_ts": "2026-02-01T20:53:13.755Z",
     "yes_bid": 0.5937,
     "yes_ask": 0.6137,
     "yes_mid": 0.6037,
@@ -577,7 +577,7 @@
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
-    "tick_ts": "2026-02-02T21:01:46.281Z",
+    "tick_ts": "2026-02-02T21:01:46.755Z",
     "yes_bid": 0.5876,
     "yes_ask": 0.6076,
     "yes_mid": 0.5976,
@@ -589,7 +589,7 @@
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
-    "tick_ts": "2026-02-03T07:10:45.281Z",
+    "tick_ts": "2026-02-03T09:28:05.755Z",
     "yes_bid": 0.6106,
     "yes_ask": 0.6306,
     "yes_mid": 0.6206,
@@ -601,7 +601,7 @@
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
-    "tick_ts": "2026-02-01T22:14:01.281Z",
+    "tick_ts": "2026-02-01T22:14:01.755Z",
     "yes_bid": 0.6906,
     "yes_ask": 0.7106,
     "yes_mid": 0.7006,
@@ -613,7 +613,7 @@
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
-    "tick_ts": "2026-02-02T02:44:10.281Z",
+    "tick_ts": "2026-02-02T02:44:10.755Z",
     "yes_bid": 0.7125,
     "yes_ask": 0.7325,
     "yes_mid": 0.7225,
@@ -625,7 +625,7 @@
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
-    "tick_ts": "2026-02-03T06:45:51.282Z",
+    "tick_ts": "2026-02-03T09:03:11.755Z",
     "yes_bid": 0.6991,
     "yes_ask": 0.7191,
     "yes_mid": 0.7091,
@@ -637,7 +637,7 @@
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
-    "tick_ts": "2026-02-01T11:30:26.281Z",
+    "tick_ts": "2026-02-01T11:30:26.755Z",
     "yes_bid": 0.6838,
     "yes_ask": 0.7038,
     "yes_mid": 0.6938,
@@ -649,7 +649,7 @@
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
-    "tick_ts": "2026-02-02T03:16:07.281Z",
+    "tick_ts": "2026-02-02T03:16:07.755Z",
     "yes_bid": 0.6935,
     "yes_ask": 0.7135,
     "yes_mid": 0.7035,
@@ -661,7 +661,7 @@
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
-    "tick_ts": "2026-02-03T06:53:10.282Z",
+    "tick_ts": "2026-02-03T09:10:30.755Z",
     "yes_bid": 0.6808,
     "yes_ask": 0.7008,
     "yes_mid": 0.6908,
@@ -673,7 +673,7 @@
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
-    "tick_ts": "2026-02-01T20:48:01.282Z",
+    "tick_ts": "2026-02-01T20:48:01.755Z",
     "yes_bid": 0.3036,
     "yes_ask": 0.3236,
     "yes_mid": 0.3136,
@@ -685,7 +685,7 @@
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
-    "tick_ts": "2026-02-02T17:26:07.282Z",
+    "tick_ts": "2026-02-02T17:26:07.755Z",
     "yes_bid": 0.328,
     "yes_ask": 0.348,
     "yes_mid": 0.338,
@@ -697,7 +697,7 @@
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
-    "tick_ts": "2026-02-03T07:13:58.282Z",
+    "tick_ts": "2026-02-03T09:31:18.755Z",
     "yes_bid": 0.3782,
     "yes_ask": 0.3982,
     "yes_mid": 0.3882,
@@ -709,7 +709,7 @@
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
-    "tick_ts": "2026-02-01T12:17:57.282Z",
+    "tick_ts": "2026-02-01T12:17:57.755Z",
     "yes_bid": 0.6611,
     "yes_ask": 0.6811,
     "yes_mid": 0.6711,
@@ -721,7 +721,7 @@
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
-    "tick_ts": "2026-02-02T22:08:38.282Z",
+    "tick_ts": "2026-02-02T22:08:38.755Z",
     "yes_bid": 0.6068,
     "yes_ask": 0.6268,
     "yes_mid": 0.6168,
@@ -733,7 +733,7 @@
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
-    "tick_ts": "2026-02-03T07:07:05.282Z",
+    "tick_ts": "2026-02-03T09:24:25.755Z",
     "yes_bid": 0.7327,
     "yes_ask": 0.7527,
     "yes_mid": 0.7427,
@@ -745,7 +745,7 @@
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
-    "tick_ts": "2026-02-01T17:48:25.282Z",
+    "tick_ts": "2026-02-01T17:48:25.755Z",
     "yes_bid": 0.6337,
     "yes_ask": 0.6537,
     "yes_mid": 0.6437,
@@ -757,7 +757,7 @@
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
-    "tick_ts": "2026-02-02T11:39:06.282Z",
+    "tick_ts": "2026-02-02T11:39:06.755Z",
     "yes_bid": 0.5972,
     "yes_ask": 0.6172,
     "yes_mid": 0.6072,
@@ -769,7 +769,7 @@
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
-    "tick_ts": "2026-02-03T06:57:53.282Z",
+    "tick_ts": "2026-02-03T09:15:13.755Z",
     "yes_bid": 0.5891,
     "yes_ask": 0.6091,
     "yes_mid": 0.5991,
@@ -781,7 +781,7 @@
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
-    "tick_ts": "2026-02-01T18:36:17.282Z",
+    "tick_ts": "2026-02-01T18:36:17.755Z",
     "yes_bid": 0.5933,
     "yes_ask": 0.6133,
     "yes_mid": 0.6033,
@@ -793,7 +793,7 @@
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
-    "tick_ts": "2026-02-02T09:57:52.282Z",
+    "tick_ts": "2026-02-02T09:57:52.755Z",
     "yes_bid": 0.5199,
     "yes_ask": 0.5399,
     "yes_mid": 0.5299,
@@ -805,7 +805,7 @@
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
-    "tick_ts": "2026-02-03T06:52:54.282Z",
+    "tick_ts": "2026-02-03T09:10:14.760Z",
     "yes_bid": 0.4651,
     "yes_ask": 0.4851,
     "yes_mid": 0.4751,
@@ -817,7 +817,7 @@
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
-    "tick_ts": "2026-02-01T21:03:28.282Z",
+    "tick_ts": "2026-02-01T21:03:28.755Z",
     "yes_bid": 0.3492,
     "yes_ask": 0.3692,
     "yes_mid": 0.3592,
@@ -829,7 +829,7 @@
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
-    "tick_ts": "2026-02-02T14:19:18.282Z",
+    "tick_ts": "2026-02-02T14:19:18.755Z",
     "yes_bid": 0.3369,
     "yes_ask": 0.3569,
     "yes_mid": 0.3469,
@@ -841,7 +841,7 @@
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
-    "tick_ts": "2026-02-03T07:01:49.282Z",
+    "tick_ts": "2026-02-03T09:19:09.760Z",
     "yes_bid": 0.3181,
     "yes_ask": 0.3381,
     "yes_mid": 0.3281,
@@ -853,7 +853,7 @@
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
-    "tick_ts": "2026-02-01T12:01:42.282Z",
+    "tick_ts": "2026-02-01T12:01:42.755Z",
     "yes_bid": 0.3478,
     "yes_ask": 0.3678,
     "yes_mid": 0.3578,
@@ -865,7 +865,7 @@
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
-    "tick_ts": "2026-02-02T01:25:35.282Z",
+    "tick_ts": "2026-02-02T01:25:35.755Z",
     "yes_bid": 0.3984,
     "yes_ask": 0.4184,
     "yes_mid": 0.4084,
@@ -877,7 +877,7 @@
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
-    "tick_ts": "2026-02-03T07:08:59.282Z",
+    "tick_ts": "2026-02-03T09:26:19.760Z",
     "yes_bid": 0.4011,
     "yes_ask": 0.4211,
     "yes_mid": 0.4111,
@@ -889,7 +889,7 @@
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
-    "tick_ts": "2026-02-01T12:02:29.282Z",
+    "tick_ts": "2026-02-01T12:02:29.755Z",
     "yes_bid": 0.7712,
     "yes_ask": 0.7912,
     "yes_mid": 0.7812,
@@ -901,7 +901,7 @@
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
-    "tick_ts": "2026-02-02T04:38:34.282Z",
+    "tick_ts": "2026-02-02T04:38:34.755Z",
     "yes_bid": 0.7904,
     "yes_ask": 0.8104,
     "yes_mid": 0.8004,
@@ -913,7 +913,7 @@
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
-    "tick_ts": "2026-02-03T06:45:02.282Z",
+    "tick_ts": "2026-02-03T09:02:22.760Z",
     "yes_bid": 0.8035,
     "yes_ask": 0.8235,
     "yes_mid": 0.8135,
@@ -925,7 +925,7 @@
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
-    "tick_ts": "2026-02-01T02:03:24.282Z",
+    "tick_ts": "2026-02-01T02:03:24.755Z",
     "yes_bid": 0.5362,
     "yes_ask": 0.5562,
     "yes_mid": 0.5462,
@@ -937,7 +937,7 @@
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
-    "tick_ts": "2026-02-02T22:48:54.282Z",
+    "tick_ts": "2026-02-02T22:48:54.755Z",
     "yes_bid": 0.4806,
     "yes_ask": 0.5006,
     "yes_mid": 0.4906,
@@ -949,7 +949,7 @@
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
-    "tick_ts": "2026-02-03T07:02:26.282Z",
+    "tick_ts": "2026-02-03T09:19:46.760Z",
     "yes_bid": 0.4833,
     "yes_ask": 0.5033,
     "yes_mid": 0.4933,
@@ -961,7 +961,7 @@
   },
   {
     "market_id": "KALSHI_AAPL_EVENT_001",
-    "tick_ts": "2026-02-03T07:10:21.282Z",
+    "tick_ts": "2026-02-03T09:27:41.760Z",
     "yes_bid": 0.2849,
     "yes_ask": 0.3349,
     "yes_mid": 0.3099,
@@ -973,7 +973,7 @@
   },
   {
     "market_id": "KALSHI_MSFT_EVENT_002",
-    "tick_ts": "2026-02-03T07:06:59.282Z",
+    "tick_ts": "2026-02-03T09:24:19.760Z",
     "yes_bid": 0.4309,
     "yes_ask": 0.4809,
     "yes_mid": 0.4559,
@@ -985,7 +985,7 @@
   },
   {
     "market_id": "KALSHI_GOOGL_EVENT_003",
-    "tick_ts": "2026-02-03T06:59:37.282Z",
+    "tick_ts": "2026-02-03T09:16:57.760Z",
     "yes_bid": 0.444,
     "yes_ask": 0.494,
     "yes_mid": 0.469,
@@ -997,7 +997,7 @@
   },
   {
     "market_id": "KALSHI_TSLA_EVENT_004",
-    "tick_ts": "2026-02-03T07:02:21.282Z",
+    "tick_ts": "2026-02-03T09:19:41.760Z",
     "yes_bid": 0.5094,
     "yes_ask": 0.5594,
     "yes_mid": 0.5344,
@@ -1009,7 +1009,7 @@
   },
   {
     "market_id": "KALSHI_AMZN_EVENT_005",
-    "tick_ts": "2026-02-03T07:12:50.283Z",
+    "tick_ts": "2026-02-03T09:30:10.763Z",
     "yes_bid": 0.351,
     "yes_ask": 0.401,
     "yes_mid": 0.376,
@@ -1021,7 +1021,7 @@
   },
   {
     "market_id": "KALSHI_NVDA_EVENT_006",
-    "tick_ts": "2026-02-03T07:00:16.283Z",
+    "tick_ts": "2026-02-03T09:17:36.763Z",
     "yes_bid": 0.5735,
     "yes_ask": 0.6235,
     "yes_mid": 0.5985,
@@ -1033,7 +1033,7 @@
   },
   {
     "market_id": "KALSHI_META_EVENT_007",
-    "tick_ts": "2026-02-03T07:06:54.283Z",
+    "tick_ts": "2026-02-03T09:24:14.763Z",
     "yes_bid": 0.4991,
     "yes_ask": 0.5491,
     "yes_mid": 0.5241,
@@ -1045,7 +1045,7 @@
   },
   {
     "market_id": "KALSHI_NFLX_EVENT_008",
-    "tick_ts": "2026-02-03T06:51:20.283Z",
+    "tick_ts": "2026-02-03T09:08:40.763Z",
     "yes_bid": 0.3437,
     "yes_ask": 0.3937,
     "yes_mid": 0.3687,
