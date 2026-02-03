@@ -27,11 +27,10 @@ def main() -> None:
     args = p.parse_args()
 
     engine = sqlalchemy.create_engine(args.db_url)
+    # Use SQLAlchemy text() to support named parameters across drivers.
+    stmt = sqlalchemy.text("DELETE FROM data_quality_log WHERE message = :msg")
     with engine.begin() as conn:
-        res = conn.exec_driver_sql(
-            "DELETE FROM data_quality_log WHERE message = :msg",
-            {"msg": args.message},
-        )
+        res = conn.execute(stmt, {"msg": args.message})
 
     # SQLAlchemy may not always provide rowcount depending on driver, but psycopg does.
     print(f"Deleted rows where message='{args.message}'. rowcount={getattr(res, 'rowcount', None)}")
