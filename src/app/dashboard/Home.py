@@ -241,14 +241,15 @@ try:
                 from pm_agent.config import settings
                 
                 # Fetch signals based on custom parameters
-                signals_df = pd.read_sql(f"""
+                # Use parameterized queries to prevent SQL injection
+                signals_df = pd.read_sql("""
                     SELECT DISTINCT s.entity_id, s.ts, s.horizon_days
                     FROM signals s
                     JOIN features f ON s.entity_id = f.entity_id AND DATE(s.ts) = DATE(f.ts)
-                    WHERE f.delta_p_1d > {delta_threshold}
-                      AND f.liquidity_score >= {min_liquidity}
+                    WHERE f.delta_p_1d > %s
+                      AND f.liquidity_score >= %s
                     ORDER BY s.ts
-                """, engine)
+                """, engine, params=(delta_threshold, min_liquidity))
                 
                 if len(signals_df) > 0:
                     config = BacktestConfig(
