@@ -104,41 +104,15 @@ async def mark_component_failed(component: str) -> None:
 
 
 async def run_once() -> None:
-    """Run all pipelines, updating state incrementally after each."""
-    from pipelines.ingest_markets import run as ingest_markets
-    from pipelines.ingest_ticks import run as ingest_ticks
-    from pipelines.build_features import run as build_features
-    from pipelines.train_model import run as train_model
-    from pipelines.run_inference import run as run_inference
-    from pipelines.run_backtest import run as run_backtest
-    from pipelines.run_backtest_walkforward import run_walk_forward
-    from pipelines.publish_artifacts import run as publish_artifacts
-    
-    pipelines = [
-        ("ingest_markets", ingest_markets),
-        ("ingest_ticks", ingest_ticks),
-        ("build_features", build_features),
-        ("train_model", train_model),
-        ("run_inference", run_inference),
-        ("run_backtest", run_backtest),
-        ("run_backtest_walkforward", run_walk_forward),
-        ("publish_artifacts", publish_artifacts),
-    ]
-    
-    critical_pipelines = {"ingest_markets", "ingest_ticks"}
-    
-    # Run each pipeline and update state incrementally
-    for name, pipeline_func in pipelines:
-        try:
-            await pipeline_func()
-            # Mark as complete immediately after success
-            await mark_component_complete(name)
-        except Exception as e:
-            # Mark as failed immediately
-            await mark_component_failed(name)
-            if name in critical_pipelines:
-                # For critical steps, fail fast
-                raise
+    """Run all pipelines once (fail-fast: stops on the first failing stage).
+
+    Delegates to ``pipelines.run_all`` so the CLI entrypoint and the orchestrator
+    share the same stage list and failure handling. Imported lazily because
+    ``pipelines.run_all`` itself imports from this module.
+    """
+    from pipelines.run_all import run
+
+    await run()
 
 
 async def run_scheduled(interval_sec: int) -> None:
