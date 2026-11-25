@@ -76,3 +76,39 @@ with patch("pipelines.ingest_markets.run", noop), \\
     )
     assert result.returncode != 0
     assert "cli test failure" in result.stderr
+
+
+@pytest.mark.asyncio
+async def test_orchestrator_run_once_is_fail_fast() -> None:
+    """orchestrator.run_once must share run_all's fail-fast behavior."""
+    from agent import orchestrator
+    from pipelines import run_all as run_all_module
+
+    publish_ran = False
+
+    async def noop(*_args: object, **_kwargs: object) -> None:
+        return None
+
+    async def failing_train_model() -> None:
+        raise ValueError("non-critical stage failure")
+
+    async def track_publish() -> None:
+        nonlocal publish_ran
+        publish_ran = True
+
+    with (
+        patch.object(run_all_module, "ingest_markets", noop),
+        patch.object(run_all_module, "ingest_ticks", noop),
+        patch.object(run_all_module, "build_features", noop),
+        patch.object(run_all_module, "train_model", failing_train_model),
+        patch.object(run_all_module, "run_inference", noop),
+        patch.object(run_all_module, "run_backtest", noop),
+        patch.object(run_all_module, "run_walk_forward", noop),
+        patch.object(run_all_module, "publish_artifacts", track_publish),
+        patch.object(run_all_module, "mark_component_complete", noop),
+        patch.object(run_all_module, "mark_component_failed", noop),
+    ):
+        with pytest.raises(ValueError, match="non-critical stage failure"):
+            await orchestrator.run_once()
+
+    assert publish_ran is False
