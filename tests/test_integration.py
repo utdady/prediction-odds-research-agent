@@ -100,10 +100,11 @@ async def test_database_upserts():
 async def test_stock_analysis_agent():
     """Test StockAnalysisAgent with database data."""
     from pm_agent.agent.stock_analysis import StockAnalysisAgent
+    from pm_agent.config import settings
     import sqlalchemy
     
     # Create sync engine
-    engine = sqlalchemy.create_engine("postgresql+psycopg://pm:pm@localhost:5432/pm_research")
+    engine = sqlalchemy.create_engine(settings.database_url_sync)
     agent = StockAnalysisAgent(engine)
     
     # Test analyze_stock_performance

@@ -32,7 +32,6 @@ jobs:
             requirements-core.txt
             requirements-dev.txt
       - run: pip install -r requirements-core.txt -r requirements-dev.txt
-      - run: alembic upgrade head
       - run: >-
           pytest -q
           --ignore=tests/test_kalshi_live.py
