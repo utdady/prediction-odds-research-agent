@@ -90,3 +90,224 @@
   confidence: 0.95
   sector: Communication Services
 
+# Remaining mock markets from data/mock/*_markets.json (events 009-030)
+- market_id: KALSHI_AAPL_EVENT_009
+  entity_ticker: AAPL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: POLYMARKET_AAPL_EVENT_009
+  entity_ticker: AAPL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: KALSHI_MSFT_EVENT_010
+  entity_ticker: MSFT
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: POLYMARKET_MSFT_EVENT_010
+  entity_ticker: MSFT
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: KALSHI_GOOGL_EVENT_011
+  entity_ticker: GOOGL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: POLYMARKET_GOOGL_EVENT_011
+  entity_ticker: GOOGL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: KALSHI_TSLA_EVENT_012
+  entity_ticker: TSLA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: POLYMARKET_TSLA_EVENT_012
+  entity_ticker: TSLA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: KALSHI_AMZN_EVENT_013
+  entity_ticker: AMZN
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: POLYMARKET_AMZN_EVENT_013
+  entity_ticker: AMZN
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: KALSHI_NVDA_EVENT_014
+  entity_ticker: NVDA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: POLYMARKET_NVDA_EVENT_014
+  entity_ticker: NVDA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: KALSHI_META_EVENT_015
+  entity_ticker: META
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: POLYMARKET_META_EVENT_015
+  entity_ticker: META
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: KALSHI_NFLX_EVENT_016
+  entity_ticker: NFLX
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: POLYMARKET_NFLX_EVENT_016
+  entity_ticker: NFLX
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: KALSHI_AAPL_EVENT_017
+  entity_ticker: AAPL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: POLYMARKET_AAPL_EVENT_017
+  entity_ticker: AAPL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: KALSHI_MSFT_EVENT_018
+  entity_ticker: MSFT
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: POLYMARKET_MSFT_EVENT_018
+  entity_ticker: MSFT
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: KALSHI_GOOGL_EVENT_019
+  entity_ticker: GOOGL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: POLYMARKET_GOOGL_EVENT_019
+  entity_ticker: GOOGL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: KALSHI_TSLA_EVENT_020
+  entity_ticker: TSLA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: POLYMARKET_TSLA_EVENT_020
+  entity_ticker: TSLA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: KALSHI_AMZN_EVENT_021
+  entity_ticker: AMZN
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: POLYMARKET_AMZN_EVENT_021
+  entity_ticker: AMZN
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: KALSHI_NVDA_EVENT_022
+  entity_ticker: NVDA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: POLYMARKET_NVDA_EVENT_022
+  entity_ticker: NVDA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: KALSHI_META_EVENT_023
+  entity_ticker: META
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: POLYMARKET_META_EVENT_023
+  entity_ticker: META
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: KALSHI_NFLX_EVENT_024
+  entity_ticker: NFLX
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: POLYMARKET_NFLX_EVENT_024
+  entity_ticker: NFLX
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: KALSHI_AAPL_EVENT_025
+  entity_ticker: AAPL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: POLYMARKET_AAPL_EVENT_025
+  entity_ticker: AAPL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: KALSHI_MSFT_EVENT_026
+  entity_ticker: MSFT
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: POLYMARKET_MSFT_EVENT_026
+  entity_ticker: MSFT
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: KALSHI_GOOGL_EVENT_027
+  entity_ticker: GOOGL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: POLYMARKET_GOOGL_EVENT_027
+  entity_ticker: GOOGL
+  relationship_type: direct
+  confidence: 0.95
+  sector: Communication Services
+- market_id: KALSHI_TSLA_EVENT_028
+  entity_ticker: TSLA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: POLYMARKET_TSLA_EVENT_028
+  entity_ticker: TSLA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: KALSHI_AMZN_EVENT_029
+  entity_ticker: AMZN
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: POLYMARKET_AMZN_EVENT_029
+  entity_ticker: AMZN
+  relationship_type: direct
+  confidence: 0.95
+  sector: Consumer Discretionary
+- market_id: KALSHI_NVDA_EVENT_030
+  entity_ticker: NVDA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
+- market_id: POLYMARKET_NVDA_EVENT_030
+  entity_ticker: NVDA
+  relationship_type: direct
+  confidence: 0.95
+  sector: Technology
