@@ -27,7 +27,7 @@ run_all:
 	export PYTHONPATH=src && $(ACTIVATE) && python -m pipelines.run_all
 
 api:
-	$(ACTIVATE) && uvicorn src.app.api.main:app --reload --host 0.0.0.0 --port 8000
+	$(ACTIVATE) && uvicorn src.app.api.main:app --reload --host 127.0.0.1 --port 8000
 
 dashboard:
 	$(ACTIVATE) && streamlit run src.app.dashboard.Home --server.port 8501

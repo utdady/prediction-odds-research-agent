@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from starlette.responses import Response
 
@@ -97,14 +97,14 @@ async def metrics() -> Response:
 
 
 @app.get("/markets/latest")
-async def markets_latest(limit: int = 50) -> list[dict]:
+async def markets_latest(limit: int = Query(50, ge=1, le=500)) -> list[dict]:
     REQS.labels("/markets/latest").inc()
     async with get_session() as session:
         return await fetch_all(session, "SELECT * FROM markets ORDER BY updated_at DESC LIMIT :limit", {"limit": limit})
 
 
 @app.get("/signals/latest")
-async def signals_latest(limit: int = 50) -> list[dict]:
+async def signals_latest(limit: int = Query(50, ge=1, le=500)) -> list[dict]:
     REQS.labels("/signals/latest").inc()
     async with get_session() as session:
         return await fetch_all(session, "SELECT * FROM signals ORDER BY ts DESC LIMIT :limit", {"limit": limit})
