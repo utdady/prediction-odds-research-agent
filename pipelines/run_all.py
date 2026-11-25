@@ -39,8 +39,6 @@ async def run() -> dict[str, str]:
         ("publish_artifacts", publish_artifacts),
     ]
 
-    critical_pipelines = {"ingest_markets", "ingest_ticks"}
-
     for name, pipeline_func in pipelines:
         try:
             log.info("pipeline_start", pipeline=name)
@@ -49,14 +47,15 @@ async def run() -> dict[str, str]:
             log.info("pipeline_done", pipeline=name, status="success")
             # Update orchestrator state
             await mark_component_complete(name)
-        except Exception as e:  # pragma: no cover - defensive logging
-            log.error("pipeline_failed", pipeline=name, error=str(e))
+        except Exception as e:
+            log.error("pipeline_failed", pipeline=name, error=str(e), exc_info=True)
             pipeline_results[name] = "failed"
-            # Update orchestrator state
-            await mark_component_failed(name)
-            if name in critical_pipelines:
-                # For critical steps, fail fast
-                raise
+            # Update orchestrator state; never let a state-write failure mask the original error
+            try:
+                await mark_component_failed(name)
+            except Exception as state_err:  # pragma: no cover - defensive logging
+                log.error("mark_component_failed_error", pipeline=name, error=str(state_err))
+            raise
 
     return pipeline_results
 

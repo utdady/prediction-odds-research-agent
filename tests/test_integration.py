@@ -9,7 +9,7 @@ from pm_agent.db import get_session
 from pm_agent.sql import fetch_all, fetch_one
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_full_pipeline_with_mock_data():
     """Test that full pipeline runs end-to-end with mock data."""
     from pipelines.run_all import run as run_all_pipelines
@@ -34,13 +34,17 @@ async def test_full_pipeline_with_mock_data():
         assert features[0]["n"] > 0
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_database_upserts():
     """Test that database upserts work correctly."""
-    from pm_agent.repo.upserts import upsert_market, upsert_tick
+    from pm_agent.repo.upserts import upsert_event, upsert_market, upsert_tick, upsert_venue
     from pm_agent.schemas import NormalizedMarket, NormalizedTick
     
     async with get_session() as session:
+        await upsert_venue(session, "test", "Test")
+        await upsert_event(
+            session, event_id="EV_TEST_001", family="test", title="Test Event", resolution_ts=None
+        )
         # Test market upsert
         market = NormalizedMarket(
             venue_id="test",

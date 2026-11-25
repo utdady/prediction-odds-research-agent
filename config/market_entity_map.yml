@@ -12,7 +12,7 @@
   confidence: 0.95
   notes: "Mock mapping"
   sector: Technology
-- market_id: KALSHI_MSFT_EVENT_001
+- market_id: KALSHI_MSFT_EVENT_002
   entity_ticker: MSFT
   relationship_type: direct
   confidence: 0.95
