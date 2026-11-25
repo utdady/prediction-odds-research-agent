@@ -6,7 +6,6 @@ else
   VENV_BIN := .venv/bin
 endif
 
-VENV_PYTHON := $(VENV_BIN)/python
 ACTIVATE := . $(VENV_BIN)/activate
 
 setup:

@@ -45,19 +45,21 @@ async def run() -> dict[str, str]:
             await pipeline_func()
             pipeline_results[name] = "success"
             log.info("pipeline_done", pipeline=name, status="success")
+            # Update orchestrator state
             await mark_component_complete(name)
         except Exception as e:
-            log.error("pipeline_failed", pipeline=name, error=str(e))
+            log.error("pipeline_failed", pipeline=name, error=str(e), exc_info=True)
             pipeline_results[name] = "failed"
-            await mark_component_failed(name)
+            # Update orchestrator state; never let a state-write failure mask the original error
+            try:
+                await mark_component_failed(name)
+            except Exception as state_err:  # pragma: no cover - defensive logging
+                log.error("mark_component_failed_error", pipeline=name, error=str(state_err))
             raise
 
     return pipeline_results
 
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(run())
-    except Exception:
-        raise SystemExit(1) from None
+    asyncio.run(run())
 

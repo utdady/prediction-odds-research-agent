@@ -68,7 +68,7 @@ make migrate
 ### 4) Run end-to-end pipeline (mock fixtures)
 
 ```bash
-PYTHONPATH=src python -m pipelines.run_all
+make run_all
 ```
 
 This should:
@@ -118,7 +118,7 @@ Example screenshots are placed in `docs/screenshots/` (placeholders if you haven
 
 ### Repo entrypoints
 
-- Run everything: `PYTHONPATH=src python -m pipelines.run_all`
+- Run everything: `make run_all` (or `PYTHONPATH=src python -m pipelines.run_all`; PowerShell: `$env:PYTHONPATH="src"; python -m pipelines.run_all`)
 - Orchestrator: `python -m agent.orchestrator --mode once`
 - API: `uvicorn src.app.api.main:app --reload`
 - Dashboard: `streamlit run src.app.dashboard.Home`

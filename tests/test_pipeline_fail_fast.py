@@ -44,13 +44,13 @@ async def test_failed_stage_skips_publish_artifacts() -> None:
 
 
 def test_run_all_main_exits_nonzero_on_failure() -> None:
+    """Execute the real ``__main__`` block of pipelines.run_all with a failing stage."""
     env = os.environ.copy()
     env["PYTHONPATH"] = "src"
+    env["PYTHONIOENCODING"] = "utf-8"
     runner = """
-import asyncio
-import sys
+import runpy
 from unittest.mock import patch
-import pipelines.run_all as ra
 
 async def noop(*_a, **_kw):
     return None
@@ -58,16 +58,12 @@ async def noop(*_a, **_kw):
 async def boom():
     raise RuntimeError("cli test failure")
 
-with patch.object(ra, "ingest_markets", noop), \\
-     patch.object(ra, "ingest_ticks", noop), \\
-     patch.object(ra, "build_features", boom), \\
-     patch.object(ra, "mark_component_complete", noop), \\
-     patch.object(ra, "mark_component_failed", noop):
-    try:
-        asyncio.run(ra.run())
-    except RuntimeError:
-        sys.exit(1)
-sys.exit(0)
+with patch("pipelines.ingest_markets.run", noop), \\
+     patch("pipelines.ingest_ticks.run", noop), \\
+     patch("pipelines.build_features.run", boom), \\
+     patch("agent.orchestrator.mark_component_complete", noop), \\
+     patch("agent.orchestrator.mark_component_failed", noop):
+    runpy.run_module("pipelines.run_all", run_name="__main__")
 """
     result = subprocess.run(
         [sys.executable, "-c", runner],
@@ -75,5 +71,8 @@ sys.exit(0)
         cwd=os.path.dirname(os.path.dirname(__file__)),
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
     )
     assert result.returncode != 0
+    assert "cli test failure" in result.stderr
