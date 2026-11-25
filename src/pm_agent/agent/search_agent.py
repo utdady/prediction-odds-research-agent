@@ -103,12 +103,13 @@ class SearchAgent:
 
         # Get company details
         company_df = pd.read_sql(
-            f"""
+            """
             SELECT e.entity_id, e.ticker, e.name, e.sector, e.created_at
             FROM entities e
-            WHERE e.ticker = '{ticker}'
+            WHERE e.ticker = %s
             """,
             self.engine,
+            params=(ticker,),
         )
 
         if len(company_df) == 0:
@@ -122,39 +123,42 @@ class SearchAgent:
 
         # Get related markets
         markets_df = pd.read_sql(
-            f"""
+            """
             SELECT m.market_id, m.title, m.status, m.venue_id, m.updated_at
             FROM markets m
             INNER JOIN market_entity_map mem ON m.market_id = mem.market_id
-            WHERE mem.entity_id = '{entity_id}'
+            WHERE mem.entity_id = %s
             ORDER BY m.updated_at DESC
             LIMIT 10
             """,
             self.engine,
+            params=(entity_id,),
         )
 
         # Get latest signals
         signals_df = pd.read_sql(
-            f"""
+            """
             SELECT s.signal_id, s.ts, s.strategy, s.side, s.strength, s.horizon_days
             FROM signals s
-            WHERE s.entity_id = '{entity_id}'
+            WHERE s.entity_id = %s
             ORDER BY s.ts DESC
             LIMIT 10
             """,
             self.engine,
+            params=(entity_id,),
         )
 
         # Get latest features
         features_df = pd.read_sql(
-            f"""
+            """
             SELECT f.ts, f.p_now, f.delta_p_1d, f.liquidity_score, f.venue_disagreement
             FROM features f
-            WHERE f.entity_id = '{entity_id}'
+            WHERE f.entity_id = %s
             ORDER BY f.ts DESC
             LIMIT 10
             """,
             self.engine,
+            params=(entity_id,),
         )
 
         answer_parts = [f"**{ticker}** ({company_df.iloc[0]['name']})"]
@@ -181,14 +185,15 @@ class SearchAgent:
         ticker = self._extract_ticker(query)
 
         if ticker:
-            sql = f"""
+            sql = """
                 SELECT s.entity_id, s.ts, s.strategy, s.side, s.strength, s.horizon_days
                 FROM signals s
                 INNER JOIN entities e ON s.entity_id = e.entity_id
-                WHERE e.ticker = '{ticker}'
+                WHERE e.ticker = %s
                 ORDER BY s.ts DESC
                 LIMIT 20
             """
+            params = (ticker,)
             answer = f"Signals for {ticker}:"
         else:
             sql = """
@@ -198,9 +203,10 @@ class SearchAgent:
                 ORDER BY s.ts DESC
                 LIMIT 20
             """
+            params = None
             answer = "Recent signals:"
 
-        df = pd.read_sql(sql, self.engine)
+        df = pd.read_sql(sql, self.engine, params=params)
 
         if len(df) == 0:
             return {
@@ -259,7 +265,7 @@ class SearchAgent:
         ticker = self._extract_ticker(query)
 
         if ticker:
-            sql = f"""
+            sql = """
                 SELECT m.market_id, m.title, m.status, m.venue_id, m.updated_at,
                        (SELECT p_norm FROM odds_ticks 
                         WHERE market_id = m.market_id 
@@ -267,10 +273,11 @@ class SearchAgent:
                 FROM markets m
                 INNER JOIN market_entity_map mem ON m.market_id = mem.market_id
                 INNER JOIN entities e ON mem.entity_id = e.entity_id
-                WHERE e.ticker = '{ticker}'
+                WHERE e.ticker = %s
                 ORDER BY m.updated_at DESC
                 LIMIT 20
             """
+            params = (ticker,)
             answer = f"Markets for {ticker}:"
         else:
             sql = """
@@ -282,9 +289,10 @@ class SearchAgent:
                 ORDER BY m.updated_at DESC
                 LIMIT 20
             """
+            params = None
             answer = "Recent markets:"
 
-        df = pd.read_sql(sql, self.engine)
+        df = pd.read_sql(sql, self.engine, params=params)
 
         if len(df) == 0:
             return {
@@ -304,15 +312,16 @@ class SearchAgent:
         ticker = self._extract_ticker(query)
 
         if ticker:
-            sql = f"""
+            sql = """
                 SELECT f.ts, f.p_now, f.delta_p_1d, f.liquidity_score, 
                        f.venue_disagreement, f.rolling_std_p_1d
                 FROM features f
                 INNER JOIN entities e ON f.entity_id = e.entity_id
-                WHERE e.ticker = '{ticker}'
+                WHERE e.ticker = %s
                 ORDER BY f.ts DESC
                 LIMIT 20
             """
+            params = (ticker,)
             answer = f"Features for {ticker}:"
         else:
             sql = """
@@ -322,9 +331,10 @@ class SearchAgent:
                 ORDER BY f.ts DESC
                 LIMIT 20
             """
+            params = None
             answer = "Recent features:"
 
-        df = pd.read_sql(sql, self.engine)
+        df = pd.read_sql(sql, self.engine, params=params)
 
         if len(df) == 0:
             return {
