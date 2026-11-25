@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 
 import structlog
 
@@ -39,28 +40,25 @@ async def run() -> dict[str, str]:
         ("publish_artifacts", publish_artifacts),
     ]
 
-    critical_pipelines = {"ingest_markets", "ingest_ticks"}
-
     for name, pipeline_func in pipelines:
         try:
             log.info("pipeline_start", pipeline=name)
             await pipeline_func()
             pipeline_results[name] = "success"
             log.info("pipeline_done", pipeline=name, status="success")
-            # Update orchestrator state
             await mark_component_complete(name)
-        except Exception as e:  # pragma: no cover - defensive logging
+        except Exception as e:
             log.error("pipeline_failed", pipeline=name, error=str(e))
             pipeline_results[name] = "failed"
-            # Update orchestrator state
             await mark_component_failed(name)
-            if name in critical_pipelines:
-                # For critical steps, fail fast
-                raise
+            raise
 
     return pipeline_results
 
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    try:
+        asyncio.run(run())
+    except Exception:
+        raise SystemExit(1) from None
 
